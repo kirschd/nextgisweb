@@ -34,6 +34,9 @@ define([
                 style: "width: 100%; height: 100%;"
             }).placeAt(this.container);
 
+            this.tree.store.resCls = this.cls;
+            this.tree.store.resIface = this.interface;
+
             this.tree.on("click", lang.hitch(this, function () {
                 this.btnOk.set("disabled", !this.checkItemAcceptance(this.tree.selectedItem));
             }));
