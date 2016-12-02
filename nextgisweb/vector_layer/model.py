@@ -15,13 +15,16 @@ from distutils.version import LooseVersion
 from zope.interface import implements
 from osgeo import ogr, osr
 
-from sqlalchemy import event
 from sqlalchemy.sql import ColumnElement
 from sqlalchemy.ext.compiler import compiles
 
-import geoalchemy as ga
+import geoalchemy2 as ga
 import sqlalchemy.sql as sql
-from sqlalchemy import func
+from sqlalchemy import (
+    event,
+    func,
+    cast
+)
 
 from ..event import SafetyEvent
 from .. import db
@@ -57,8 +60,6 @@ from ..feature_layer import (
 
 from .util import _
 
-GEOM_TYPE_GA = (ga.Point, ga.LineString, ga.Polygon,
-                ga.MultiPoint, ga.MultiLineString, ga.MultiPolygon)
 GEOM_TYPE_DB = ('POINT', 'LINESTRING', 'POLYGON',
                 'MULTIPOINT', 'MULTILINESTRING', 'MULTIPOLYGON')
 GEOM_TYPE_OGR = (
@@ -93,9 +94,10 @@ FIELD_TYPE_OGR = (
     ogr.OFTTime,
     ogr.OFTDateTime)
 
+FIELD_FORBIDDEN_NAME = ("id", "type", "source")
+
 _GEOM_OGR_2_TYPE = dict(zip(GEOM_TYPE_OGR, GEOM_TYPE.enum * 2))
 _GEOM_TYPE_2_DB = dict(zip(GEOM_TYPE.enum, GEOM_TYPE_DB))
-_GEOM_TYPE_2_GA = dict(zip(GEOM_TYPE_DB, GEOM_TYPE_GA))
 
 _FIELD_TYPE_2_ENUM = dict(zip(FIELD_TYPE_OGR, FIELD_TYPE.enum))
 _FIELD_TYPE_2_DB = dict(zip(FIELD_TYPE.enum, FIELD_TYPE_DB))
@@ -105,11 +107,12 @@ Base = declarative_base()
 
 class FieldDef(object):
 
-    def __init__(self, key, keyname, datatype, uuid):
+    def __init__(self, key, keyname, datatype, uuid, display_name=None):
         self.key = key
         self.keyname = keyname
         self.datatype = datatype
         self.uuid = uuid
+        self.display_name = display_name
 
 
 class TableInfo(object):
@@ -130,12 +133,34 @@ class TableInfo(object):
         defn = ogrlayer.GetLayerDefn()
         for i in range(defn.GetFieldCount()):
             fld_defn = defn.GetFieldDefn(i)
+            fld_name = fld_defn.GetNameRef()
+            if fld_name.lower() in FIELD_FORBIDDEN_NAME:
+                raise VE(_("Field name is forbidden: '%s'. Please remove or rename it.") % fld_name)
+
             uid = str(uuid.uuid4().hex)
             self.fields.append(FieldDef(
                 'fld_%s' % uid,
-                fld_defn.GetNameRef(),
+                fld_name,
                 _FIELD_TYPE_2_ENUM[fld_defn.GetType()],
                 uid
+            ))
+
+        return self
+
+    @classmethod
+    def from_fields(cls, fields, srs_id, geometry_type):
+        self = cls(srs_id)
+        self.geometry_type = geometry_type
+        self.fields = []
+
+        for fld in fields:
+            uid = str(uuid.uuid4().hex)
+            self.fields.append(FieldDef(
+                'fld_%s' % uid,
+                fld.get('keyname'),
+                fld.get('datatype'),
+                uid,
+                fld.get('display_name')
             ))
 
         return self
@@ -167,10 +192,13 @@ class TableInfo(object):
 
         layer.fields = []
         for f in self.fields:
+            if f.display_name is None:
+                f.display_name = f.keyname
+
             layer.fields.append(VectorLayerField(
                 keyname=f.keyname,
                 datatype=f.datatype,
-                display_name=f.keyname,
+                display_name=f.display_name,
                 fld_uuid=f.uuid
             ))
 
@@ -186,13 +214,11 @@ class TableInfo(object):
         table = db.Table(
             tablename if tablename else ('lvd_' + str(uuid.uuid4().hex)),
             metadata, db.Column('id', db.Integer, primary_key=True),
-            ga.GeometryExtensionColumn('geom', _GEOM_TYPE_2_GA[
-                geom_fldtype](2, srid=self.srs_id)),
+            db.Column('geom', ga.Geometry(dimension=2,
+                geometry_type=geom_fldtype, srid=self.srs_id)),
             *map(lambda (fld): db.Column(fld.key, _FIELD_TYPE_2_DB[
                 fld.datatype]), self.fields)
         )
-
-        ga.GeometryDDL(table)
 
         db.mapper(model, table)
 
@@ -224,6 +250,13 @@ class TableInfo(object):
             ):
                 geom.FlattenTo2D()
 
+            gtype = geom.GetGeometryType()
+            ltype = ogrlayer.GetGeomType() & (~ogr.wkb25DBit)
+            if gtype != ltype:
+                raise ValidationError(_("Geometry type (%s) does not match column type (%s).") % (
+                    GEOM_TYPE_DISPLAY[gtype-1],
+                    GEOM_TYPE_DISPLAY[ltype-1]))
+
             geom.Transform(transform)
 
             fld_values = dict()
@@ -242,14 +275,18 @@ class TableInfo(object):
                     try:
                         fld_value = strdecode(feature.GetFieldAsString(i))
                     except UnicodeDecodeError:
-                        raise ValidationError(_("Unable to decode string value of feature #%(feat)d attribute #%(attr)d.") % dict(
-                            feat=fid, attr=i))  # NOQA
+                        raise ValidationError(_(
+                            "It seems like declared and actual attributes "
+                            "encodings do not match. Unable to decode "
+                            "attribute #%(attr)d of feature #%(feat)d. "
+                            "Try declaring different encoding.") % dict(
+                            feat=fid, attr=i))
 
                 fld_values[self[feature.GetFieldDefnRef(i).GetNameRef()].key] \
                     = fld_value
 
-            obj = self.model(fid=fid, geom=ga.WKTSpatialElement(
-                str(geom), self.srs_id), **fld_values)
+            obj = self.model(fid=fid, geom=ga.elements.WKTElement(
+                str(geom), srid=self.srs_id), **fld_values)
 
             DBSession.add(obj)
 
@@ -310,6 +347,16 @@ class VectorLayer(Base, Resource, SpatialLayerMixin, LayerFieldsMixin):
 
         self.tableinfo = tableinfo
 
+    def setup_from_fields(self, fields):
+        tableinfo = TableInfo.from_fields(
+            fields, self.srs.id, self.geometry_type)
+        tableinfo.setup_layer(self)
+
+        tableinfo.setup_metadata(tablename=self._tablename)
+        tableinfo.metadata.create_all(bind=DBSession.connection())
+
+        self.tableinfo = tableinfo
+
     def load_from_ogr(self, ogrlayer, strdecode):
         self.tableinfo.load_from_ogr(ogrlayer, strdecode)
 
@@ -317,6 +364,7 @@ class VectorLayer(Base, Resource, SpatialLayerMixin, LayerFieldsMixin):
         return super(VectorLayer, self).get_info() + (
             (_("Geometry type"), dict(zip(GEOM_TYPE.enum, GEOM_TYPE_DISPLAY))[
                 self.geometry_type]),
+            (_("Feature count"), self.feature_query()().total_count),
         )
 
     # IFeatureLayer
@@ -347,8 +395,8 @@ class VectorLayer(Base, Resource, SpatialLayerMixin, LayerFieldsMixin):
         # не позволит записать пустую геометрию, но это и не нужно пока.
 
         if feature.geom is not None:
-            obj.geom = ga.WKTSpatialElement(
-                str(feature.geom), self.srs_id)
+            obj.geom = ga.elements.WKTElement(
+                str(feature.geom), srid=self.srs_id)
 
         DBSession.merge(obj)
 
@@ -372,8 +420,8 @@ class VectorLayer(Base, Resource, SpatialLayerMixin, LayerFieldsMixin):
             if f.keyname in feature.fields.keys():
                 setattr(obj, f.key, feature.fields[f.keyname])
 
-        obj.geom = ga.WKTSpatialElement(
-            str(feature.geom), self.srs_id)
+        obj.geom = ga.elements.WKTElement(
+            str(feature.geom), srid=self.srs_id)
 
         DBSession.add(obj)
         DBSession.flush()
@@ -429,9 +477,9 @@ class VectorLayer(Base, Resource, SpatialLayerMixin, LayerFieldsMixin):
         model = tableinfo.model
 
         fields = (
-            st_extent(st_transform(st_setsrid(model.geom, self.srs_id), 4326)),
+            st_extent(st_transform(st_setsrid(cast(model.geom, ga.Geometry), self.srs_id), 4326)),
         )
-        bbox =  DBSession.query(*fields).label('bbox')
+        bbox = DBSession.query(*fields).label('bbox')
 
         fields = (
             st_xmax(bbox),
@@ -621,20 +669,29 @@ class _source_attr(SP):
 
             drivername = ogrds.GetDriver().GetName()
 
-            if drivername not in ('ESRI Shapefile', 'GeoJSON'):
+            if drivername not in ('ESRI Shapefile', 'GeoJSON', 'KML'):
                 raise VE(_("Unsupport OGR driver: %s.") % drivername)
 
             ogrlayer = self._ogrds(ogrds)
             geomtype = ogrlayer.GetGeomType()
             if geomtype not in _GEOM_OGR_2_TYPE:
-                raise VE(_("Unsupported geometry type: '%s'.") % (
-                    ogr.GeometryTypeToName(geomtype) if geomtype else None))
+                raise VE(_("Unsupported geometry type: '%s'. Probable reason: data contain mixed geometries.") % (
+                    ogr.GeometryTypeToName(geomtype) if geomtype is not None else None))
 
             self._ogrlayer(srlzr.obj, ogrlayer, recode)
 
         finally:
             if iszip:
                 shutil.rmtree(ogrfn)
+
+
+class _fields_attr(SP):
+
+    def setter(self, srlzr, value):
+        srlzr.obj.tbl_uuid = uuid.uuid4().hex
+
+        with DBSession.no_autoflush:
+            srlzr.obj.setup_from_fields(value)
 
 
 class _geometry_type_attr(SP):
@@ -682,6 +739,7 @@ class VectorLayerSerializer(Serializer):
 
     source = _source_attr(read=None, write=P_DS_WRITE)
     tracked = _tracked_attr(read=P_DS_READ, write=P_DS_WRITE)
+    fields = _fields_attr(read=None, write=P_DS_WRITE)
 
 
 class FeatureQueryBase(object):
@@ -709,6 +767,7 @@ class FeatureQueryBase(object):
 
         self._filter = None
         self._filter_by = None
+        self._filter_sql = None
         self._like = None
         self._in_ = None
         self._intersects = None
@@ -747,6 +806,12 @@ class FeatureQueryBase(object):
         else:
             self._filter_by.update(kwargs)
 
+    def filter_sql(self, *args):
+        if len(args) > 0 and isinstance(args[0], list):
+            self._filter_sql = args[0]
+        else:
+            self._filter_sql = args
+
     def order_by(self, *args):
         self._order_by = args
 
@@ -770,7 +835,7 @@ class FeatureQueryBase(object):
         srsid = self.layer.srs_id if self._srs is None else self._srs.id
 
         geomcol = table.columns.geom
-        geomexpr = ga.functions.transform(geomcol, srsid)
+        geomexpr = db.func.st_transform(geomcol, srsid)
 
         if self._geom:
             if self._single_part:
@@ -819,6 +884,21 @@ class FeatureQueryBase(object):
                     l.append(op(table.columns.id, v))
                 else:
                     l.append(op(table.columns[tableinfo[k].key], v))
+
+            where.append(db.and_(*l))
+
+        if self._filter_sql:
+            l = []
+            for _filter_sql_item in self._filter_sql:
+                if len(_filter_sql_item) == 3:
+                    table_column, op, val = _filter_sql_item
+                    if table_column == 'id':
+                        l.append(op(table.columns.id, val))
+                    else:
+                        l.append(op(table.columns[tableinfo[table_column].key], val))
+                elif len(_filter_sql_item) == 4:
+                    table_column, op, val1, val2 = _filter_sql_item
+                    l.append(op(table.columns[tableinfo[table_column].key], val1, val2))
 
             where.append(db.and_(*l))
 

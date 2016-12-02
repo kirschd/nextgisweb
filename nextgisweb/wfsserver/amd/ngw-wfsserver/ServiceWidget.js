@@ -27,10 +27,10 @@ define([
     "dijit/layout/ContentPane",
     "dijit/Dialog",
     "dijit/Toolbar",
+    "dijit/form/Form",
     "ngw-pyramid/form/KeynameTextBox",
     "ngw-pyramid/form/DisplayNameTextBox",
     "ngw-pyramid/form/IntegerValueTextBox",
-    // "ngw-pyramid/form/ScaleTextBox",
     "dijit/form/TextBox",
     "dijit/form/CheckBox",
     "dijit/form/NumberTextBox",
@@ -90,6 +90,9 @@ define([
                 },
                 betweenThreshold: 5
             });
+
+            this.itemIdx = 0;
+            this.widgetTreeRootNodeId = this.widgetTree.rootNode.getIdentity();
         },
 
         postCreate: function () {
@@ -114,14 +117,35 @@ define([
                             attribute: "children"
                         }
                     );
+                    this.itemIdx++;
+                    this.widgetTree.set("path", [
+                        this.widgetTreeRootNodeId,
+                        this.itemIdx
+                    ]);
                 }));
             }));
 
             // Удаление слоя или группы
             this.btnDeleteItem.on("click", function() {
-                widget.itemStore.deleteItem(widget.widgetTree.selectedItem);
-                widget.treeLayoutContainer.removeChild(widget.itemPane);
-                widget.btnDeleteItem.set("disabled", true);
+                var item = widget.widgetTree.selectedItem,
+                    identity = widget.itemModel.getIdentity(item),
+                    node = widget.widgetTree._itemNodesMap[identity][0],
+                    prevSibling = node.getPreviousSibling(),
+                    nextSibling = node.getNextSibling();
+
+                // Переключаемся на соседнюю ноду
+                var sibling = prevSibling ? prevSibling : nextSibling;
+                if (sibling) {
+                    widget.widgetTree.set("path", [
+                        widget.widgetTreeRootNodeId,
+                        sibling.getIdentity()
+                    ]);
+                } else {
+                    widget.treeLayoutContainer.removeChild(widget.itemPane);
+                    widget.btnDeleteItem.set("disabled", true);
+                }
+
+                widget.itemStore.deleteItem(item);
             });
 
             this.widgetTree.watch("selectedItem", function (attr, oldValue, newValue) {
@@ -161,23 +185,6 @@ define([
 
         startup: function () {
             this.inherited(arguments);
-        },
-
-        validateWidget: function () {
-            var result = { isValid: true, error: [] };
-
-            array.forEach([], function (subw) {
-                // форсируем показ значка при проверке
-                subw._hasBeenBlurred = true;
-                subw.validate();
-
-                // если есть ошибки, фиксируем их
-                if ( !subw.isValid() ) {
-                    result.isValid = false;
-                }
-            });
-
-            return result;
         },
 
         getAddParent: function () {
@@ -223,7 +230,28 @@ define([
 
             array.forEach(value, function (i) {
                 this.itemStore.newItem(i, {parent: this.itemModel.root, attribute: "children"});
+                this.itemIdx++;
             }, this);
+
+            // При загрузке отмечаем самую первую ноду
+            if (this.itemIdx > 0) {
+                this.widgetTree.set("path", [this.widgetTreeRootNodeId, 1]);
+            }
+        },
+
+        validateDataInMixin: function (errback) {
+            var success = true;
+
+            array.every(this.widgetTree.rootNode.getChildren(), function (n) {
+                this.widgetTree.set("path", [
+                    this.widgetTreeRootNodeId,
+                    n.getIdentity()
+                ]);
+                success = success && this.widgetPropertiesForm.validate();
+                return success;
+            }, this);
+
+            return success;
         }
     });
 });

@@ -33,6 +33,7 @@ define([
     "ngw-pyramid/i18n!webmap",
     "ngw-pyramid/hbs-i18n",
     // tools
+    "ngw-webmap/MapToolbar",
     "./tool/Base",
     "./tool/Zoom",
     "./tool/Measure",
@@ -48,9 +49,11 @@ define([
     "dijit/form/Select",
     "dijit/form/DropDownButton",
     "dijit/ToolbarSeparator",
+    "ngw-webmap/NgwShareButtons",
     // css
     "xstyle/css!" + ngwConfig.amdUrl + "cbtree/themes/claro/claro.css",
-    "xstyle/css!" + ngwConfig.amdUrl + "openlayers/ol.css"
+    "xstyle/css!" + ngwConfig.amdUrl + "openlayers/ol.css",
+    "xstyle/css!./template/resources/Display.css"
 ], function (
     declare,
     _WidgetBase,
@@ -84,6 +87,7 @@ define([
     route,
     i18n,
     hbsI18n,
+    MapToolbar,
     ToolBase,
     ToolZoom,
     ToolMeasure,
@@ -272,7 +276,9 @@ define([
 
             // Загружаем закладки, когда кнопка будет готова
             this._postCreateDeferred.then(
-                function () { widget.loadBookmarks(); }
+                function () {
+                    widget.mapToolbar.items.loadBookmarks();
+                }
             ).then(undefined, function (err) { console.error(err); });
 
             // Выбранный элемент
@@ -415,75 +421,6 @@ define([
             this._startupDeferred.resolve();
         },
 
-        addTool: function (tool) {
-            var btn = new ToggleButton({
-                label: tool.label,
-                showLabel: false,
-                iconClass: tool.iconClass
-            }).placeAt(this.mapToolbar);
-
-            tool.toolbarBtn = btn;
-
-            this.tools.push(tool);
-
-            var display = this;
-            btn.watch("checked", function (attr, oldVal, newVal) {
-                if (newVal) {
-                    // При включении инструмента все остальные инструменты
-                    // выключаем, а этот включаем
-                    array.forEach(display.tools, function (t) {
-                        if (t != tool && t.toolbarBtn.get("checked")) {
-                            t.toolbarBtn.set("checked", false);
-                        }
-                    });
-                    tool.activate();
-                } else {
-                    // При выключении остальные инструменты не трогаем
-                    tool.deactivate();
-                }
-            });
-        },
-
-        loadBookmarks: function () {
-            if (this.config.bookmarkLayerId) {
-                var store = new JsonRest({target: route.feature_layer.store({
-                    id: this.config.bookmarkLayerId
-                })});
-
-                var display = this;
-
-                store.query().then(
-                    function (data) {
-                        array.forEach(data, function (f) {
-                            display.bookmarkMenu.addChild(new MenuItem({
-                                label: f.label,
-                                onClick: function () {
-                                    // Отдельно запрашиваем экстент объекта
-                                    xhr.get(route.feature_layer.store.item({
-                                        id: display.config.bookmarkLayerId,
-                                        feature_id: f.id
-                                    }), {
-                                        handleAs: "json",
-                                        headers: { "X-Feature-Box": true }
-                                    }).then(
-                                        function data(featuredata) {
-                                            display.map.olMap.getView().fit(
-                                                featuredata.box,
-                                                display.map.olMap.getSize()
-                                            );
-                                        }
-                                    );
-                                }
-                            }));
-                        });
-                    }
-                );
-            } else {
-                // Если слой с закладками не указан, то прячем кнопку
-                domStyle.set(this.bookmarkButton.domNode, "display", "none");
-            }
-        },
-
         _itemStoreSetup: function () {
             var itemConfigById = {};
 
@@ -583,20 +520,20 @@ define([
                     new ol.control.ScaleLine()
                 ],
                 view: new ol.View({
-                    minZoom: 4
+                    minZoom: 3
                 })
             });
 
             // Обновление подписи центра карты
             this.map.watch("center", function (attr, oldVal, newVal) {
                 var pt = ol.proj.transform(newVal, widget.displayProjection, widget.lonlatProjection);
-                widget.centerLonNode.innerHTML = number.format(pt[0], {places: 3});
-                widget.centerLatNode.innerHTML = number.format(pt[1], {places: 3});
+                widget.mapToolbar.items.centerLonNode.innerHTML = number.format(pt[0], {places: 3});
+                widget.mapToolbar.items.centerLatNode.innerHTML = number.format(pt[1], {places: 3});
             });
 
             // Обновление подписи масштабного уровня
             this.map.watch("resolution", function (attr, oldVal, newVal) {
-                widget.scaleInfoNode.innerHTML = "1 : " + number.format(
+                widget.mapToolbar.items.scaleInfoNode.innerHTML = "1 : " + number.format(
                     widget.map.getScaleForResolution(
                         newVal,
                         widget.map.olMap.getView().getProjection().getMetersPerUnit()
@@ -635,13 +572,22 @@ define([
                 idx = idx + 1;
             }, this);
 
-            this.zoomToInitialExtentButton.on("click", function() {
+            this.mapToolbar.items.zoomToInitialExtentButton.on("click", function() {
                 widget._zoomToInitialExtent();
             });
 
-            this.showPermalink.on("click", function() {
-                widget._showPermalink();
-            });
+            this.mapToolbar.items.leftToolbarSwitch.on("change", lang.hitch(this, function (isLayersShow) {
+                if (isLayersShow) {
+                    this.mapToolbar.items.leftToolbarSwitch.set("title", i18n.gettext("Hide layers"));
+                    this.mapToolbar.items.leftToolbarSwitch.set("iconClass", "iconSideHide");
+                    this.mainContainer.addChild(this.leftPanel);
+                }
+                else {
+                    this.mapToolbar.items.leftToolbarSwitch.set("title", i18n.gettext("Show layers"));
+                    this.mapToolbar.items.leftToolbarSwitch.set("iconClass", "iconSideExpand");
+                    this.mainContainer.removeChild(this.leftPanel);
+                }
+            }));
 
             this._zoomToInitialExtent();
 
@@ -725,17 +671,11 @@ define([
         },
 
         _toolsSetup: function () {
-            this.addTool(new ToolBase({
-                display: this,
-                label: i18n.gettext("Pan"),
-                iconClass: "iconPan"
-            }));
+            this.mapToolbar.items.addTool(new ToolZoom({display: this, out: false}), 'zoomingIn');
+            this.mapToolbar.items.addTool(new ToolZoom({display: this, out: true}), 'zoomingOut');
 
-            this.addTool(new ToolZoom({display: this, out: false}));
-            this.addTool(new ToolZoom({display: this, out: true}));
-
-            this.addTool(new ToolMeasure({display: this, type: "LineString"}));
-            this.addTool(new ToolMeasure({display: this, type: "Polygon"}));
+            this.mapToolbar.items.addTool(new ToolMeasure({display: this, type: "LineString"}), 'measuringLength');
+            this.mapToolbar.items.addTool(new ToolMeasure({display: this, type: "Polygon"}), 'measuringArea');
         },
 
         _pluginsSetup: function () {
@@ -794,71 +734,25 @@ define([
         },
 
         _zoomToInitialExtent: function () {
-            if (this._urlParams.resolution && this._urlParams.center) {
-                this.map.olMap.getView().setCenter([
-                    parseFloat(this._urlParams.center[0]),
-                    parseFloat(this._urlParams.center[1])
-                ]);
-                this.map.olMap.getView().setResolution(
-                    parseFloat(this._urlParams.resolution)
+            if (this._urlParams.zoom && this._urlParams.lon && this._urlParams.lat) {
+                this.map.olMap.getView().setCenter(
+                    ol.proj.fromLonLat([
+                        parseFloat(this._urlParams.lon),
+                        parseFloat(this._urlParams.lat)
+                    ])
                 );
+                this.map.olMap.getView().setZoom(
+                    parseInt(this._urlParams.zoom)
+                );
+
+                if (this._urlParams.angle) {
+                    this.map.olMap.getView().setRotation(
+                        parseFloat(this._urlParams.angle)
+                    );
+                }
             } else {
                 this.map.olMap.getView().fit(this._extent, this.map.olMap.getSize());
             }
-        },
-
-        _showPermalink: function () {
-            all({
-                visbleItems: this.getVisibleItems(),
-                map: this._mapDeferred
-            }).then(
-                lang.hitch(this, function (results) {
-                    var visibleStyles = array.map(
-                        results.visbleItems,
-                        lang.hitch(this, function (i) {
-                            return this.itemStore.dumpItem(i).styleId;
-                        })
-                    );
-
-                    var queryStr = ioQuery.objectToQuery({
-                        base: this._baseLayer.name,
-                        center: this.map.olMap.getView().getCenter(),
-                        resolution: this.map.olMap.getView().getResolution(),
-                        styles: visibleStyles.join(",")
-                    });
-
-                    var permalink = window.location.origin
-                                    + window.location.pathname
-                                    + "?" + queryStr;
-
-                    var permalinkDialog = new Dialog({
-                        title: i18n.gettext("Permalink"),
-                        draggable: false,
-                        autofocus: false
-                    });
-
-                    var permalinkContent = new TextBox({
-                        readOnly: false,
-                        selectOnClick: true,
-                        value: decodeURIComponent(permalink),
-                        style: {
-                            width: "300px"
-                        }
-                    });
-
-                    domConstruct.place(
-                        permalinkContent.domNode,
-                        permalinkDialog.containerNode,
-                        "first"
-                    );
-                    permalinkContent.startup();
-                    permalinkDialog.show();
-                }),
-                function (error) {
-                    console.log(error);
-                }
-            );
         }
-
     });
 });

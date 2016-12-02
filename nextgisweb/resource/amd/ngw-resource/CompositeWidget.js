@@ -57,8 +57,7 @@ define([
             }).placeAt(this);
 
             this.btnContainer = new ContentPane({
-                region: "top",
-                style: "padding: 0; margin-bottom: 1ex;"
+                region: "bottom"
             }).placeAt(this);
 
             domClass.add(this.btnContainer.domNode, "ngwButtonStrip");
@@ -79,13 +78,11 @@ define([
 
                 this.buttons.push(new Button({
                     label: i18n.gettext("Create"),
-                    iconClass: "dijitIconNewTask",
                     onClick: lang.hitch(this, function () { this.createObj(false); })
                 }).placeAt(this.btnContainer));
 
                 this.buttons.push(new Button({
                     label: i18n.gettext("Create and edit"),
-                    iconClass: "dijitIconNewTask",
                     onClick: lang.hitch(this, function () { this.createObj(true); })
                 }).placeAt(this.btnContainer));
 
@@ -93,7 +90,6 @@ define([
 
                 this.buttons.push(new Button({
                     label: i18n.gettext("Save"),
-                    iconClass: "dijitIconSave",
                     onClick: lang.hitch(this, this.updateObj)
                 }).placeAt(this.btnContainer));
 
@@ -101,7 +97,6 @@ define([
 
                 this.buttons.push(new Button({
                     label: i18n.gettext("Delete"),
-                    iconClass: "dijitIconDelete",
                     onClick: lang.hitch(this, this.deleteObj)
                 }).placeAt(this.btnContainer));
 
@@ -121,6 +116,10 @@ define([
                 // }).placeAt(this.btnContainer));
 
             }
+
+            array.forEach(this.buttons, function (btn) {
+                domClass.add(btn.domNode, "dijitButton--primary"); 
+            });
 
         },
 
@@ -154,10 +153,12 @@ define([
                         // Если валидация завершилась с ошибкой,
                         // отмечаем заголовок красным цветом
 
-                        // TODO: Наверное есть способ сделать это как-то
-                        // получше, например вешать специальный класс на
-                        // ноду таба, но непонятно как ее обнаружить.
-                        if (!success) { member.set("title", "<span style=\"color: #d00\">" + member.get("title") + "</span>"); }
+                        if (!success) { 
+                            domClass.add(member.controlButton.domNode, "dijitTabError"); 
+                        } else {
+                             if(domClass.contains(member.controlButton.domNode, "dijitTabError"))
+                                domClass.remove(member.controlButton.domNode, "dijitTabError");
+                        }
                         return success;
                     }
                 ));
@@ -202,7 +203,7 @@ define([
 
             return all(promises).then(function () {
                 return data;
-            }, console.error);
+            });
         },
 
         deserialize: function (data) {
@@ -281,7 +282,7 @@ define([
                     console.debug("Validation failed");
                     deferred.reject({ error: E_SERIALIZE });
                 }
-            ).then(null, console.error);
+            );
 
             return deferred;
         },
@@ -313,16 +314,16 @@ define([
             var S_ERROR_MESSAGE = i18n.gettext("Error message:")
 
             if (e.error == E_REQUEST && e.status == 400) {
-                alert(i18n.gettext("Errors found during data validation on server. Correct error and try again.") + " " + S_ERROR_MESSAGE + "\n" + e.data.message);
+                alert(i18n.gettext("Errors found during data validation on server. Correct them and try again.") + "\n\n" + S_ERROR_MESSAGE + " " + e.data.message);
 
             } else if (e.error == E_REQUEST && e.status == 403) {
-                alert(i18n.gettext("Insufficient permissions to perform the operation.") + " " + S_ERROR_MESSAGE + "\n" + e.data.message);
+                alert(i18n.gettext("Insufficient permissions to perform the operation.") + "\n\n" + S_ERROR_MESSAGE + " " + e.data.message);
 
             } else if (e.error == E_INVALID_DATA) {
                 alert(i18n.gettext("Errors found during data validation. Tabs with errors marked in red."));
 
             } else {
-                alert(i18n.gettext("Unexpected error occurred during the operation.") + " " + S_ERROR_MESSAGE + "\n" + e.data.message);
+                alert(i18n.gettext("Unexpected error occurred during the operation.") + "\n\n" + S_ERROR_MESSAGE + " " + e.data.message);
             }
         },
 
@@ -355,7 +356,7 @@ define([
                     this.unlock();
                 }),
                 /* errback  */ lang.hitch(this, this.unlock)
-            ).then(null, console.error);
+            );
         },
 
         deleteObj: function () {
@@ -370,7 +371,7 @@ define([
                     this.unlock();
                 }),
                 /* errback  */ lang.hitch(this, this.unlock)
-            ).then(null, console.error);
+            );
         },
 
         refreshObj: function () {
@@ -378,7 +379,7 @@ define([
                 handleAs: "json"
             }).then(
                 lang.hitch(this, this.deserialize)
-            ).otherwise(console.error);
+            );
         },
     });
 

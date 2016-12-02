@@ -43,6 +43,11 @@ define([
             setObject("source", this.wSourceFile.get("value"));
             setObject("source.encoding", this.wSourceEncoding.get("value"));
             setObject("tracked", this.wTracked.get("value"));
+        },
+
+        validateDataInMixin: function (errback) {
+            return this.wSourceFile.upload_promise !== undefined &&
+                this.wSourceFile.upload_promise.isResolved();
         }
 
     });

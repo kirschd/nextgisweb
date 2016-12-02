@@ -1,26 +1,43 @@
 <%inherit file='nextgisweb:templates/base.mako' />
 <%! from nextgisweb.auth.util import _ %>
+
+<%def name="head()">
+    <script>
+        require([
+            "dojo/ready",
+            "ngw/sorted-table"
+        ], function(
+            ready,
+            sortedTable
+        ){
+            ready(function() {
+                sortedTable(document.getElementById("user-table"));
+            });
+        });
+    </script>
+</%def>
+
 <div class="content-box">
-    <table class="pure-table pure-table-horizontal" style="width: 100%;">
-        <thead>
-            <tr>
-                <th style="width: 2em; text-align: inherit;">ID</th>
-                <th style="width: 50%; text-align: inherit;">${tr(_("Full name"))}</th>
-                <th style="width: 50%; text-align: inherit;">${tr(_("Login"))}</th>
-                <th style="width: 0px;">&nbsp;</th>
-            </tr>
-        </thead>
-        <tbody>
-            %for obj in obj_list:
+    <div class="table-wrapper">
+        <table id="user-table" class="pure-table pure-table-horizontal">
+            <thead>
                 <tr>
-                    <td>${obj.id}</td>
-                    <td>${obj.display_name}</td>
-                    <td>${obj.keyname}</td>
-                    <td>
-                        <a class="dijitIconEdit" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle" href="${request.route_url('auth.user.edit', id=obj.id)}"></a>
-                    </td>
+                    <th class="sort-default" style="width: 50%; text-align: inherit;">${tr(_("Full name"))}</th>
+                    <th style="width: 50%; text-align: inherit;">${tr(_("Login"))}</th>
+                    <th class="no-sort" style="width: 0px;">&nbsp;</th>
                 </tr>
-            %endfor
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                %for obj in obj_list:
+                    <tr class="${'text-muted' if obj.disabled else ''}">
+                        <td>${obj.display_name}</td>
+                        <td>${obj.keyname}</td>
+                        <td>
+                            <a class="material-icons icon-edit" href="${request.route_url('auth.user.edit', id=obj.id)}"></a>
+                        </td>
+                    </tr>
+                %endfor
+            </tbody>
+        </table>
+    </div>
 </div>

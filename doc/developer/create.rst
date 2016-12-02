@@ -142,8 +142,58 @@ PostGIS Layer
     }     
 
 
-Vector layer
-------------
+Vector empty layer 
+-----------------------
+
+
+**Example request**:
+
+.. sourcecode:: http
+
+    POST /api/resource/ HTTP/1.1
+
+    {
+    "resource":{
+        "cls":"vector_layer",
+        "parent":{
+            "id":0
+        },
+        "display_name":"Foo bar",
+        "keyname":null,
+        "description":null
+    },
+    "resmeta":{
+        "items":{
+
+        }
+    },
+    "vector_layer":{
+        "srs":{ "id":3857 },
+        "geometry_type": "POINT",
+        "fields": [
+            {
+                "keyname": "REAL_FIELD",
+                "datatype": "REAL"
+            },
+            {
+                "keyname": "INTEGER_FIELD",
+                "datatype": "INTEGER"
+            },
+            {
+                "keyname": "DATE_FIELD",
+                "datatype": "DATE"
+            },
+            {
+                "keyname": "TIME_FIELD",
+                "datatype": "TIME",
+                "display_name": "TIME FIELD"
+            }
+        ]
+    }
+    }
+
+Vector layer with data 
+-----------------------
 
 Создание векторного слоя включает в себя 3 этапа:
 
@@ -211,6 +261,18 @@ Create vector layer
         }
       }
     }
+    
+Same steps with curl:
+
+.. sourcecode:: bash
+   
+   $ curl -F file=@/tmp/bld.zip http://<ngw url>/api/component/file_upload/upload
+
+   {"upload_meta": [{"id": "00cc4aa9-cca7-4160-b069-58070dff9399", "name": "bld.zip", "mime_type": "application/octet-stream", "size": 62149}]}
+
+   $ curl -u administrator:admin -H "Content-Type: application/json" -X POST -d '{"resource": {"cls": "vector_layer","description": "test curl create", "display_name": "buildings","keyname": null,"parent": {"id": 0}},"vector_layer": {"source": {"encoding": "utf-8","id": "00cc4aa9-cca7-4160-b069-58070dff9399","mime_type": "application/zip","name": "bld.zip","size": 62149},"srs": {"id": 3857}}}' http://<ngw url>/api/resource/
+
+   {"id": 108, "parent": {"id": 0}}
 
 Raster layer
 ------------
@@ -234,8 +296,59 @@ Loading raster
 Create raster layer
 ^^^^^^^^^^^^^^^^^^^
 
-.. todo::
-   Написать про загрузку слоя
+Для создания растрового слоя необходимо выполнить следующий запрос.
+
+.. http:post:: /api/resource
+
+   Запрос на создание растрового слоя
+    
+   :<json string cls: тип (для растрового слоя должен быть "raster_layer")
+   :<json jsonobj parent:  идентификатор родительского ресурса (должен совпадать с идентификатором в адресе запроса: resource/0 - {"id":0})
+   :<json string display_name: имя слоя (**обязательно**)
+   :<json string keyname: ключ (не обязательно)
+   :<json int id: идентификатор
+   :<json string description: описание, можно использовать html (не обязательно)
+   :<json jsonobj source: информация полученная в результате загрузки файла
+   :<json jsonobj srs: система координат в которую необходимо перепроецировать входной файл. Должна соответсвоваться СК веб карты
+   
+**Example request**:
+
+.. sourcecode:: http
+
+   POST /api/resource HTTP/1.1
+   Host: ngw_url
+   Accept: */*
+   
+    {
+      "resource": {
+      "cls": "raster_layer",
+      "display_name": "20150820_211250_1_0b0e",
+      "parent": {"id": 101}
+      },
+      "raster_layer": {
+        "source": {
+          "id": "a2f381f9-8467-477c-87fa-3f71ecb749a5", 
+          "mime_type": "image/tiff", 
+          "size": 17549598
+         },
+        "srs": {"id": 3857}
+      }
+    }
+
+    
+Some steps with curl:
+
+.. sourcecode:: bash
+   
+   $ curl --user "user:password" --upload-file 'tmp/myfile.tif' http://<ngw url>/api/component/file_upload/upload
+
+
+   {"id": "a2f381f9-8467-477c-87fa-3f71ecb749a5", "mime_type": "image/tiff", "size": 17549598}
+
+   $ curl -u administrator:admin -H "Content-Type: application/json" -X POST -d '{ "resource": { "cls": "raster_layer", "display_name": "20150820_211250_1_0b0e", "parent": { "id": 101 } }, "raster_layer": { "source": {"id": "a2f381f9-8467-477c-87fa-3f71ecb749a5", "mime_type": "image/tiff", "size": 17549598}, "srs": {"id": 3857} } }' http://<ngw url>/api/resource/
+
+   {"id": 102, "parent": {"id": 101}}
+
 
 File bucket
 -----------

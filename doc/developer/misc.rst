@@ -69,10 +69,10 @@ Identification by polygon
 Get resource data
 -----------------
 
-У ресурсов можно получать их данные. Для векторных ресурсов это данные в формате 
-GeoJSON и CSV, для растровых - TMS.
+You can get resource data. For vector or postgis layer this is data in GeoJSON and CSV formats, 
+for raster layer - TMS, for QGIS styles - qml.
 
-Для получения данных в формате GeoJSON необходимо выполнить следующий запрос:
+**The following request returns GeoJSON from vector layer**:
 
 .. deprecated:: 2.2        
 .. http:get:: /resource/(int:id)/geojson/
@@ -80,9 +80,9 @@ GeoJSON и CSV, для растровых - TMS.
 .. versionadded:: 2.2
 .. http:get:: /api/resource/(int:id)/geojson
 
-    Запрос данных в GeoJson
+    GeoJson data request
     
-    :param id: идентификатор ресурса  
+    :param id: resource id  
     
       
 **Example request**:
@@ -93,16 +93,16 @@ GeoJSON и CSV, для растровых - TMS.
    Host: ngw_url
    Accept: */*
 
-Для получения данных в формате CSV необходимо выполнить следующий запрос:
+**The following request returns CSV from vector layer**:
 
 .. versionadded:: 2.2    
 .. http:get:: /api/resource/(int:id)/csv
 
-    Запрос данных в CSV
+   CSV data request
     
-    :param id: идентификатор ресурса  
+   :param id: resiurce id  
     
-      
+    
 **Example request**:
 
 .. sourcecode:: http
@@ -111,7 +111,7 @@ GeoJSON и CSV, для растровых - TMS.
    Host: ngw_url
    Accept: */*
    
-Для получения данных в формате TMS необходимо выполнить следующий запрос:
+**The following request returns TMS from raster layer**:
 
 .. deprecated:: 2.2    
 .. http:get:: /resource/(int:id)/tms?z=(int:z)&x=(int:x)&y=(int:y)
@@ -119,12 +119,14 @@ GeoJSON и CSV, для растровых - TMS.
 .. versionadded:: 2.2
 .. http:get:: /api/component/render/tile?z=(int:z)&x=(int:x)&y=(int:y)&resource=(int:id1),(int:id2)...
     
-    Запрос тайла
+    Tile request
     
-    :param id1, id2: идентификаторы ресурсов стилей
-    :param z: уровень зума
-    :param x: номер тайла по вертикали
-    :param y: номер тайла по горизонтали
+    :param id1, id2: style resources id's
+    :param z: zoom level
+    :param x: tile number on x axis (horisontal)
+    :param y: tile number on y axis (vertical)
+    
+.. note: Styles order should be from lower to upper.     
     
 **Example request**:
 
@@ -133,6 +135,24 @@ GeoJSON и CSV, для растровых - TMS.
    GET /api/component/render/tile?z=7&x=84&y=42&resource=234 HTTP/1.1
    Host: ngw_url
    Accept: */*
+   
+**The following request returns QML from QGIS style**:
+
+.. versionadded:: 3.0.1    
+.. http:get:: /api/resource/(int:id)/qml
+
+   QML data request
+    
+   :param id: resiurce id  
+    
+    
+**Example request**:
+
+.. sourcecode:: http
+
+   GET /api/resource/56/qml HTTP/1.1
+   Host: ngw_url
+   Accept: */*   
 
 User managment
 --------------
@@ -205,14 +225,14 @@ To create new user the following request have to be executed:
 To create new group the following request have to be executed:
     
 .. versionadded:: 2.3
-.. http:post:: /api/component/auth/group/
+.. http:post:: /api/component/auth/group
 
    request to create new group
        
 To self create user (anonymouse) the following request have to be executed:
     
 .. versionadded:: 2.3
-.. http:post:: /api/component/auth/register/
+.. http:post:: /api/component/auth/register
 
    request to create new user
    

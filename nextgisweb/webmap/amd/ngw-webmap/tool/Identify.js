@@ -74,7 +74,7 @@ define([
             evt.preventDefault();
         }
         return true;
-    }
+    };
 
     var Widget = declare([BorderContainer], {
         style: "width: 100%; height: 100%",
@@ -225,7 +225,7 @@ define([
 
                                 pane.startup();
                                 pane.load();
-                            }).otherwise(console.error);
+                            });
                         }
                     }).placeAt(widget.extController, "last");
                     domClass.add(widget.editButton.domNode, "no-label");
@@ -233,7 +233,7 @@ define([
                     widget.resize();
 
                 });
-            }).otherwise(console.error);
+            });
         }
     });
 
@@ -307,7 +307,7 @@ define([
                         }
                     }).then(function (response) {
                         tool._responsePopup(response, point, layerLabels);
-                    }).otherwise(console.error);
+                    });
                 }
             });
 
@@ -334,8 +334,10 @@ define([
         },
 
         _responsePopup: function (response, point, layerLabels) {
-            // TODO: Проверить, есть ли какой-нибудь результат
-            // и показывать popup только если он есть.
+            if (response.featureCount == 0) {
+                this._popup.setPosition(undefined);
+                return;
+            }
 
             domConstruct.empty(this._popup.contentDiv);
 
@@ -347,7 +349,7 @@ define([
             });
             this._popup.widget = widget;
 
-            widget.placeAt(this._popup.contentDiv).startup();
+            widget.placeAt(this._popup.contentDiv);
 
             this._popup.setPosition(point);
 

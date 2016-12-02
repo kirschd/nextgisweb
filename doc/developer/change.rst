@@ -6,7 +6,7 @@ Editing
 Change resource
 -----------------
 
-The following POST request need to change resource.
+The following PUT request need to change resource.
 
 .. http:put:: /resource/(int:parent_id)/child/(int:id)
 
@@ -24,7 +24,7 @@ The following POST request need to change resource.
 
 .. sourcecode:: http
 
-   POST /resource/7/child/8 HTTP/1.1
+   PUT /resource/7/child/8 HTTP/1.1
    Host: ngw_url
    Accept: */*
    
@@ -40,7 +40,7 @@ The following POST request need to change resource.
    
 
 .. note::
-   This equal to change resource. The request must be authorised.
+   This equal to create resource. The request must be authorised.
    
 Create new feature
 ------------------
@@ -92,9 +92,9 @@ Create new feature
    }
 
 При задании даты необходимо разделить ее на составляющие части: *day*, *month*,
-*day*. Поля которые имеются в слое, но отсутствуют в запросе не будут изменены.
+*day*. 
 При формировании запроса не обязательно указывать все поля - достаточно только
-те, что необходимо изменить.
+те, что необходимо задать. 
 
 Change feature
 ----------------
@@ -147,6 +147,9 @@ Change feature
      "geom": "MULTIPOINT (15112317.9207317382097244 6059092.3103669174015522)", 
      "id": 1
    }   
+   
+При формировании запроса не обязательно указывать все поля - достаточно только
+те, что необходимо изменить. Остальные поля остаются без изменений. Так же можно не указывать поле geom.
 
 Delete feature
 ---------------

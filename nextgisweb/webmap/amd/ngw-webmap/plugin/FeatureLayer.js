@@ -22,7 +22,8 @@ define([
     "dijit/popup",
     "put-selector/put",
     "ngw/route",
-    "./../tool/Identify"
+    "ngw-webmap/MapStatesObserver",
+    "ngw-webmap/tool/Identify"
 ], function (
     declare,
     _PluginBase,
@@ -46,6 +47,7 @@ define([
     popup,
     put,
     route,
+    MapStatesObserver,
     Identify
 ) {
     var MAX_SEARCH_RESULTS = 15;
@@ -155,11 +157,18 @@ define([
        },
 
         postCreate: function () {
-            this.display.itemMenu.addChild(this.menuItem);
-            this.display.addTool(this.tool);
+            if (this.display.itemMenu) {
+                this.display.itemMenu.addChild(this.menuItem);
+            }
 
-            new ToolbarSeparator().placeAt(this.display.infoNode, 'first');
-            this.tbSearch.placeAt(this.display.infoNode, 'first');
+            var mapStates = MapStatesObserver.getInstance();
+            mapStates.addState('identifying', this.tool);
+            mapStates.setDefaultState('identifying', true);
+
+            if (this.display.mapToolbar && this.display.mapToolbar.items.infoNode) {
+                new ToolbarSeparator().placeAt(this.display.mapToolbar.items.infoNode, 'first');
+                this.tbSearch.placeAt(this.display.mapToolbar.items.infoNode, 'first');
+            }
         },
 
         openFeatureGrid: function () {
@@ -341,7 +350,7 @@ define([
 
                 fdeferred.resolve(MAX_SEARCH_RESULTS);
 
-            })).otherwise(console.error);
+            }));
         }
     });
 });
