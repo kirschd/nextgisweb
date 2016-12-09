@@ -124,6 +124,7 @@ define([
                 this.layerPicker.pick().then(lang.hitch(this, function (itm) {
                     this.itemStore.newItem({
                             "item_type": "layer",
+                            "keyname": itm.keyname,
                             "display_name": itm.display_name,
                             "layer_style_id": itm.id,
                             "layer_enabled": false,
@@ -151,10 +152,12 @@ define([
                     // При изменении выделенного элемента перенесем значения в виджеты
                     // и покажем нужную панель: для слоев одну, для групп другую.
                     if (newValue.item_type == "group") {
+                        widget.widgetItemKeynameGroup.set("value", widget.getItemValue("keyname"));
                         widget.widgetItemDisplayNameGroup.set("value", widget.getItemValue("display_name"));
                         widget.widgetProperties.selectChild(widget.paneGroup);
                         widget.widgetItemGroupExpanded.set("checked", widget.getItemValue("group_expanded"));
                     } else if (newValue.item_type == "layer") {
+                        widget.widgetItemKeyname.set("value", widget.getItemValue("keyname"));
                         widget.widgetItemDisplayNameLayer.set("value", widget.getItemValue("display_name"));
                         widget.widgetProperties.selectChild(widget.paneLayer);
                         widget.wdgtItemLayerEnabled.set("checked", widget.getItemValue("layer_enabled"));
@@ -177,8 +180,16 @@ define([
             });
 
             // При изменении значений переносим их в модель
+            this.widgetItemKeynameGroup.watch("value", function (attr, oldValue, newValue) {
+                widget.setItemValue("keyname", newValue);
+            });
+
             this.widgetItemDisplayNameGroup.watch("value", function (attr, oldValue, newValue) {
                 widget.setItemValue("display_name", newValue);
+            });
+
+            this.widgetItemKeyname.watch("value", function (attr, oldValue, newValue) {
+                widget.setItemValue("keyname", newValue);
             });
 
             this.widgetItemDisplayNameLayer.watch("value", function (attr, oldValue, newValue) {
@@ -245,6 +256,7 @@ define([
             function traverse(itm) {
                 return {
                     item_type: store.getValue(itm, "item_type"),
+                    keyname: store.getValue(itm, "keyname"),
                     display_name: store.getValue(itm, "display_name"),
                     group_expanded: store.getValue(itm, "group_expanded"),
                     layer_style_id: store.getValue(itm, "layer_style_id"),
