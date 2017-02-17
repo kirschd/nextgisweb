@@ -19,7 +19,7 @@
 
 <div class="content-box">
     <div class="table-wrapper">
-        <table id="group-table" class="pure-table pure-table-horizontal">
+        <table id="group-table" class="children-table pure-table pure-table-horizontal">
             <thead>
                 <tr>
                     <th class="sort-default" style="width: 50%; text-align: inherit;">${tr(_("Full name"))}</th>
@@ -30,12 +30,11 @@
             <tbody>
                 %for obj in obj_list:
                     <tr>
-                        <td>${obj.display_name}</td>
-                        <td>${obj.keyname}</td>
-                        <td>
-                            <a class="material-icons icon-edit" href="${request.route_url('auth.group.edit', id=obj.id)}"></a>
+                        <td class="children-table__name">
+                            <a href="#" class="children-table__name__link">${obj.display_name}</a>
                         </td>
-                        <td>
+                        <td>${obj.keyname}</td>
+                        <td class="children-table__action">
                             <a class="material-icons icon-edit" href="${request.route_url('auth.group.edit', id=obj.id)}"></a>
                         </td>
                     </tr>
