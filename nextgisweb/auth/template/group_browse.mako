@@ -35,6 +35,9 @@
                         <td>
                             <a class="material-icons icon-edit" href="${request.route_url('auth.group.edit', id=obj.id)}"></a>
                         </td>
+                        <td>
+                            <a class="material-icons icon-edit" href="${request.route_url('auth.group.edit', id=obj.id)}"></a>
+                        </td>
                     </tr>
                 %endfor
             </tbody>
