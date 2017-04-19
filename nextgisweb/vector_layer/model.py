@@ -819,6 +819,7 @@ class FeatureQueryBase(object):
         self._filter_sql = None
         self._like = None
         self._intersects = None
+        self._in = None
 
         self._order_by = None
 
@@ -862,6 +863,10 @@ class FeatureQueryBase(object):
 
     def intersects(self, geom):
         self._intersects = geom
+
+    def in_(self, field, values):
+        self._in = field
+        self._in_values = values
 
     def __call__(self):
         tableinfo = TableInfo.from_layer(self.layer)
@@ -950,6 +955,10 @@ class FeatureQueryBase(object):
 
             where.append(db.or_(*l))
 
+        if self._in:
+            where.append(
+                table.columns[tableinfo[self._in].key].in_(self._in_values))
+
         if self._intersects:
             intgeom = db.func.st_setsrid(db.func.st_geomfromtext(
                 self._intersects.wkt), self._intersects.srid)
@@ -1014,5 +1023,16 @@ class FeatureQueryBase(object):
                 res = DBSession.connection().execute(query)
                 for row in res:
                     return row[0]
+
+            def unique_values(self, keyname):
+                query = sql.select(
+                    [table.columns[tableinfo[keyname].key], ],
+                    distinct=True
+                )
+                values = []
+                res = DBSession.connection().execute(query)
+                for row in res:
+                    values.append(row[0])
+                return values
 
         return QueryFeatureSet()

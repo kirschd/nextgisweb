@@ -24,7 +24,7 @@ msgstr ""
 msgid "Field not found (ID=%d)."
 msgstr "Поле не найдено (ID=%d)."
 
-#: amd/ngw-feature-layer/FieldsWidget.js:142 view.py:54 view.py:338
+#: amd/ngw-feature-layer/FieldsWidget.js:146 view.py:54 view.py:344
 msgid "Feature table"
 msgstr "Таблица объектов"
 
@@ -33,15 +33,15 @@ msgstr "Таблица объектов"
 msgid "Feature #%d"
 msgstr "Объект #%d"
 
-#: view.py:335
+#: view.py:341
 msgid "Vector layer"
 msgstr "Векторный слой"
 
-#: view.py:344
+#: view.py:350
 msgid "Download as GeoJSON"
 msgstr "Скачать GeoJSON"
 
-#: view.py:349
+#: view.py:355
 msgid "Download as CSV"
 msgstr "Скачать CSV"
 
@@ -76,6 +76,37 @@ msgid "Confirmation"
 msgstr "Подтверждение"
 
 #: amd/ngw-feature-layer/FeatureGrid.js:212
+#: amd/ngw-feature-layer/FeatureEditorWidget.js:179
+#: amd/ngw-feature-layer/FieldsDisplayWidget.js:31
+#: amd/ngw-feature-layer/FieldsWidget.js:109 view.py:362
+msgid "Attributes"
+msgstr "Атрибуты"
+
+#: amd/ngw-feature-layer/FeatureAttributeFilter.js:41
+msgid "Filter by attributes"
+msgstr "Фильтр по атрибутам"
+
+#: amd/ngw-feature-layer/FeatureAttributeFilter.js:53
+msgid "Attribute"
+msgstr "Атрибут"
+
+#: amd/ngw-feature-layer/FeatureAttributeFilter.js:58
+msgid "Values"
+msgstr "Значения"
+
+#: amd/ngw-feature-layer/FeatureEditorWidget.js:81
+msgid "Attribute: "
+msgstr "Поле: "
+
+#: amd/ngw-feature-layer/FeatureEditorWidget.js:245
+msgid "Save"
+msgstr "Сохранить"
+
+#: amd/ngw-feature-layer/FeatureGrid.js:216
+msgid "Confirmation"
+msgstr "Подтверждение"
+
+#: amd/ngw-feature-layer/FeatureGrid.js:217
 msgid "Delete feature?"
 msgstr "Удалить объект?"
 
@@ -107,6 +138,14 @@ msgstr "АН"
 msgid "Label attribute"
 msgstr "Атрибут наименование"
 
+#: amd/ngw-feature-layer/template/FeatureAttributeFilterActionBar.hbs:3
+msgid "Apply"
+msgstr "Применить"
+
+#: amd/ngw-feature-layer/template/FeatureAttributeFilterActionBar.hbs:7
+msgid "Reset"
+msgstr "Сбросить"
+
 #: amd/ngw-feature-layer/template/FeatureGrid.hbs:12
 msgid "Open"
 msgstr "Открыть"
@@ -120,6 +159,11 @@ msgid "Delete"
 msgstr "Удалить"
 
 #: amd/ngw-feature-layer/template/FeatureGrid.hbs:25
+#: amd/ngw-feature-layer/template/FeatureGrid.hbs:24
+msgid "Filter"
+msgstr "Отфильтровать"
+
+#: amd/ngw-feature-layer/template/FeatureGrid.hbs:35
 msgid "Search..."
 msgstr "Поиск..."
 
@@ -134,4 +178,3 @@ msgstr "Да"
 #: template/section_fields.mako:15
 msgid "No"
 msgstr "Нет"
-

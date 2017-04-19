@@ -682,4 +682,7 @@ class FeatureQueryBase(object):
                 finally:
                     conn.close()
 
+            def unique_values(self, keyname):
+                return []  # dummy
+
         return QueryFeatureSet()

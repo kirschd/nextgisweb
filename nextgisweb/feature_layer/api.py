@@ -298,6 +298,18 @@ def count(resource, request):
         content_type=b'application/json')
 
 
+def unique_values(resource, request):
+    request.resource_permission(PERM_READ)
+
+    keyname = request.matchdict['keyname']
+    query = resource.feature_query()
+    values = query().unique_values(keyname)
+
+    return Response(
+        json.dumps(dict(unique_values=values)),
+        content_type=b'application/json')
+
+
 def setup_pyramid(comp, config):
     config.add_route(
         'feature_layer.geojson', '/api/resource/{id}/geojson',
@@ -334,3 +346,7 @@ def setup_pyramid(comp, config):
     config.add_route(
         'feature_layer.identify', '/api/feature_layer/identify') \
         .add_view(identify, request_method='POST')
+    config.add_route(
+        'feature_layer.unique_values', '/api/resource/{id}/field/{keyname}',
+        factory=resource_factory) \
+        .add_view(unique_values, context=IFeatureLayer, request_method='GET')

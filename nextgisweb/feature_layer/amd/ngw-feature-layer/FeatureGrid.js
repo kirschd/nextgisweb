@@ -24,6 +24,7 @@ define([
     "ngw-pyramid/i18n!feature_layer",
     "ngw-pyramid/hbs-i18n",
     "./FeatureStore",
+    "./FeatureAttributeFilter",
     // css
     "xstyle/css!" + ngwConfig.amdUrl + "dgrid/css/skins/claro.css",
     // template
@@ -106,6 +107,7 @@ define([
             this.btnOpenFeature.on("click", lang.hitch(this, this.openFeature));
             this.btnUpdateFeature.on("click", lang.hitch(this, this.updateFeature));
             this.btnDeleteFeature.on("click", lang.hitch(this, this.deleteFeature));
+            this.btnFilterByAttributes.on("click", lang.hitch(this, this.filterByAttributes));
 
             if (this.likeSearch) {
                 // Поиск нужен, настраиваем обработчики строки поиска
@@ -174,6 +176,7 @@ define([
                 widget.set("selectedRow", null);
             });
 
+            this.filter.initialize(this);
             this._gridInitialized.resolve();
         },
 
@@ -222,6 +225,10 @@ define([
                 ).then(function () { widget._grid.refresh(); });
             }));
             confirmDlg.show();
+        },
+
+        filterByAttributes: function () {
+             this.filter.show();
         },
 
 

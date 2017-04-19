@@ -1,5 +1,5 @@
-/* glue: 0.11.1 hash: 5879f9fe20 */
-        .iconZoomOut,
+/* glue: 0.13 hash: 9f0f5f9572 */
+.iconZoomOut,
 .iconZoomIn,
 .iconZoom,
 .iconTable,
@@ -17,6 +17,7 @@
 .iconLink,
 .iconLayers,
 .iconIdentify,
+.iconFilter,
 .iconFeatureEdit,
 .iconDescription,
 .iconArrowInOut {
@@ -132,46 +133,53 @@
             height: 16px;
         }
         
-        .iconFeatureEdit {
+        .iconFilter {
             background-position: -64px -32px;
             width: 16px;
             height: 16px;
         }
         
-        .iconDescription {
+        .iconFeatureEdit {
             background-position: -64px -48px;
             width: 16px;
             height: 16px;
         }
         
-        .iconArrowInOut {
+        .iconDescription {
             background-position: 0 -64px;
             width: 16px;
             height: 16px;
         }
         
+        .iconArrowInOut {
+            background-position: -16px -64px;
+            width: 16px;
+            height: 16px;
+        }
+        
         @media screen and (-webkit-min-device-pixel-ratio: 1.0), screen and (min--moz-device-pixel-ratio: 1.0), screen and (-o-min-device-pixel-ratio: 100/100), screen and (min-device-pixel-ratio: 1.0), screen and (min-resolution: 1.0dppx) {
-            .iconZoomOut,
-    .iconZoomIn,
-    .iconZoom,
-    .iconTable,
-    .iconSwipeVertical,
-    .iconSwipeHorizontal,
-    .iconSideHide,
-    .iconSideExpand,
-    .iconShapeSquare,
-    .iconRulerSquare,
-    .iconRuler,
-    .iconRotate,
-    .iconPrinter,
-    .iconPan,
-    .iconMap,
-    .iconLink,
-    .iconLayers,
-    .iconIdentify,
-    .iconFeatureEdit,
-    .iconDescription,
-    .iconArrowInOut {
+.iconZoomOut,
+.iconZoomIn,
+.iconZoom,
+.iconTable,
+.iconSwipeVertical,
+.iconSwipeHorizontal,
+.iconSideHide,
+.iconSideExpand,
+.iconShapeSquare,
+.iconRulerSquare,
+.iconRuler,
+.iconRotate,
+.iconPrinter,
+.iconPan,
+.iconMap,
+.iconLink,
+.iconLayers,
+.iconIdentify,
+.iconFilter,
+.iconFeatureEdit,
+.iconDescription,
+.iconArrowInOut {
                 background-image: url('../img/icon.png');
                 -webkit-background-size: 80px 80px;
                 -moz-background-size: 80px 80px;

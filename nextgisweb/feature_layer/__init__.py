@@ -24,6 +24,7 @@ class FeatureLayerComponent(Component):
     def initialize(self):
         self.settings['identify.attributes'] = \
             self.settings.get('identify.attributes', 'true').lower() == 'true'
+        self.settings['filter.limit'] = self.settings.get('filter.limit', 250)
 
         self.settings['search.nominatim'] = \
             self.settings.get('search.nominatim', 'true').lower() == 'true'
@@ -39,5 +40,6 @@ class FeatureLayerComponent(Component):
 
     settings_info = (
         dict(key='identify.attributes', desc=u"Показывать атрибуты в идентификации"),
-        dict(key='search.nominatim', desc=u"Использовать Nominatim при поиске")
+        dict(key='search.nominatim', desc=u"Использовать Nominatim при поиске"),
+        dict(key='filter.limit', desc=u"Число отображаемых уникальных значений в фильтре по атрибутам")
     )
