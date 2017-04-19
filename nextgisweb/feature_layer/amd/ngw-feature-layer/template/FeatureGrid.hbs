@@ -20,6 +20,15 @@
             data-dojo-props="iconClass: 'dijitIconDelete', disabled: true" label="{{gettext 'Delete'}}">
         </div>
 
+        <div data-dojo-attach-point="btnFilterByAttributes" data-dojo-type="dijit/form/Button"
+            data-dojo-props="iconClass: 'iconFilter'" label="{{gettext 'Filter'}}">
+
+            <div data-dojo-attach-point="filter"
+                data-dojo-type="ngw-feature-layer/FeatureAttributeFilter">
+            </div>
+
+        </div>
+
         <div style="float: right">
             <div data-dojo-attach-point="tbSearch" data-dojo-type="dijit/form/TextBox"
                 data-dojo-props="placeHolder: '{{gettext 'Search...'}}'"

@@ -1,4 +1,4 @@
-/* glue: 0.11.1 hash: de44a081a7 */
+/* glue: 0.11.1 hash: 5e7c00fe5e */
         .iconZoomOut,
 .iconZoomIn,
 .iconZoom,
@@ -15,6 +15,7 @@
 .iconLink,
 .iconLayers,
 .iconIdentify,
+.iconFilter,
 .iconFeatureEdit,
 .iconDescription,
 .iconArrowInOut {
@@ -118,20 +119,26 @@
             height: 16px;
         }
         
-        .iconFeatureEdit {
+        .iconFilter {
             background-position: -64px 0;
             width: 16px;
             height: 16px;
         }
         
-        .iconDescription {
+        .iconFeatureEdit {
             background-position: -64px -16px;
             width: 16px;
             height: 16px;
         }
         
-        .iconArrowInOut {
+        .iconDescription {
             background-position: -64px -32px;
+            width: 16px;
+            height: 16px;
+        }
+        
+        .iconArrowInOut {
+            background-position: -64px -48px;
             width: 16px;
             height: 16px;
         }
@@ -153,6 +160,7 @@
     .iconLink,
     .iconLayers,
     .iconIdentify,
+    .iconFilter,
     .iconFeatureEdit,
     .iconDescription,
     .iconArrowInOut {

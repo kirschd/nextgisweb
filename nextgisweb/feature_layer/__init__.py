@@ -24,6 +24,7 @@ class FeatureLayerComponent(Component):
     def initialize(self):
         self.settings['identify.attributes'] = \
             self.settings.get('identify.attributes', 'true').lower() == 'true'
+        self.settings['filter.limit'] = self.settings.get('filter.limit', 250)
 
         from .extension import FeatureExtension
         self.FeatureExtension = FeatureExtension
@@ -36,4 +37,5 @@ class FeatureLayerComponent(Component):
 
     settings_info = (
         dict(key='identify.attributes', desc=u"Показывать атрибуты в идентификации"),
+        dict(key='filter.limit', desc=u"Число отображаемых уникальных значений в фильтре по атрибутам")
     )

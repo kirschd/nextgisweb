@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nextgisweb 0.0\n"
 "Report-Msgid-Bugs-To: info@nextgis.ru\n"
-"POT-Creation-Date: 2017-01-13 19:20+0700\n"
+"POT-Creation-Date: 2017-04-19 23:04+0700\n"
 "PO-Revision-Date: 2015-09-13 13:13+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -24,7 +24,7 @@ msgstr ""
 msgid "Field not found (ID=%d)."
 msgstr "Поле не найдено (ID=%d)."
 
-#: amd/FieldsWidget.js:146 view.py:54 view.py:338
+#: amd/ngw-feature-layer/FieldsWidget.js:146 view.py:54 view.py:344
 msgid "Feature table"
 msgstr "Таблица объектов"
 
@@ -33,80 +33,105 @@ msgstr "Таблица объектов"
 msgid "Feature #%d"
 msgstr "Объект #%d"
 
-#: view.py:335
+#: view.py:341
 msgid "Vector layer"
 msgstr "Векторный слой"
 
-#: view.py:344
+#: view.py:350
 msgid "Download as GeoJSON"
 msgstr "Загрузить GeoJSON"
 
-#: view.py:349
+#: view.py:355
 msgid "Download as CSV"
 msgstr "Загрузить CSV"
 
-#: amd/FeatureEditorWidget.js:179 amd/FieldsDisplayWidget.js:31
-#: amd/FieldsWidget.js:109 view.py:356
+#: amd/ngw-feature-layer/FeatureEditorWidget.js:179
+#: amd/ngw-feature-layer/FieldsDisplayWidget.js:31
+#: amd/ngw-feature-layer/FieldsWidget.js:109 view.py:362
 msgid "Attributes"
 msgstr "Атрибуты"
 
-#: amd/FeatureEditorWidget.js:81
+#: amd/ngw-feature-layer/FeatureAttributeFilter.js:41
+msgid "Filter by attributes"
+msgstr "Фильтр по атрибутам"
+
+#: amd/ngw-feature-layer/FeatureAttributeFilter.js:53
+msgid "Attribute"
+msgstr "Атрибут"
+
+#: amd/ngw-feature-layer/FeatureAttributeFilter.js:58
+msgid "Values"
+msgstr "Значения"
+
+#: amd/ngw-feature-layer/FeatureEditorWidget.js:81
 msgid "Attribute: "
 msgstr "Поле: "
 
-#: amd/FeatureEditorWidget.js:245
+#: amd/ngw-feature-layer/FeatureEditorWidget.js:245
 msgid "Save"
 msgstr "Сохранить"
 
-#: amd/FeatureGrid.js:213
+#: amd/ngw-feature-layer/FeatureGrid.js:216
 msgid "Confirmation"
 msgstr "Подтверждение"
 
-#: amd/FeatureGrid.js:214
+#: amd/ngw-feature-layer/FeatureGrid.js:217
 msgid "Delete feature?"
 msgstr "Удалить объект?"
 
-#: amd/FieldsDisplayWidget.js:101
+#: amd/ngw-feature-layer/FieldsDisplayWidget.js:101
 msgid "N/A"
 msgstr "Н/Д"
 
-#: amd/FieldsWidget.js:59 template/section_fields.mako:5
+#: amd/ngw-feature-layer/FieldsWidget.js:59 template/section_fields.mako:5
 msgid "Keyname"
 msgstr "Ключ"
 
-#: amd/FieldsWidget.js:69 template/section_fields.mako:6
+#: amd/ngw-feature-layer/FieldsWidget.js:69 template/section_fields.mako:6
 msgid "Type"
 msgstr "Тип"
 
-#: amd/FieldsWidget.js:73 template/section_fields.mako:7
+#: amd/ngw-feature-layer/FieldsWidget.js:73 template/section_fields.mako:7
 msgid "Display name"
 msgstr "Наименование"
 
-#: amd/FieldsWidget.js:87
+#: amd/ngw-feature-layer/FieldsWidget.js:87
 msgid "FT"
 msgstr "ТО"
 
-#: amd/FieldsWidget.js:97
+#: amd/ngw-feature-layer/FieldsWidget.js:97
 msgid "LA"
 msgstr "АН"
 
-#: amd/FieldsWidget.js:141
+#: amd/ngw-feature-layer/FieldsWidget.js:141
 msgid "Label attribute"
 msgstr "Атрибут наименование"
 
-#: amd/template/FeatureGrid.hbs:12
+#: amd/ngw-feature-layer/template/FeatureAttributeFilterActionBar.hbs:3
+msgid "Apply"
+msgstr "Применить"
+
+#: amd/ngw-feature-layer/template/FeatureAttributeFilterActionBar.hbs:7
+msgid "Reset"
+msgstr "Сбросить"
+
+#: amd/ngw-feature-layer/template/FeatureGrid.hbs:12
 msgid "Open"
 msgstr "Открыть"
 
-#: amd/template/FeatureGrid.hbs:16
+#: amd/ngw-feature-layer/template/FeatureGrid.hbs:16
 msgid "Edit"
 msgstr "Редактировать"
 
-#: amd/template/FeatureGrid.hbs:20
+#: amd/ngw-feature-layer/template/FeatureGrid.hbs:20
 msgid "Delete"
 msgstr "Удалить"
 
-#: amd/template/FeatureGrid.hbs:25
+#: amd/ngw-feature-layer/template/FeatureGrid.hbs:24
+msgid "Filter"
+msgstr "Отфильтровать"
+
+#: amd/ngw-feature-layer/template/FeatureGrid.hbs:35
 msgid "Search..."
 msgstr "Поиск..."
 
