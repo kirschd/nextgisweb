@@ -133,6 +133,18 @@ msgstr "Уточните критерий поиска"
 msgid "Not found"
 msgstr "Не найдено"
 
+#: amd/ngw-webmap/plugin/LayerEditor.js:26
+msgid "Confirmation"
+msgstr "Подтверждение"
+
+#: amd/ngw-webmap/plugin/LayerEditor.js:27
+msgid "Finish editing?"
+msgstr "Закончить редактирование?"
+
+#: amd/ngw-webmap/plugin/LayerEditor.js:41
+msgid "Editing"
+msgstr "Редактирование"
+
 #: amd/ngw-webmap/plugin/LayerInfo.js:36
 msgid "Description"
 msgstr "Описание"
