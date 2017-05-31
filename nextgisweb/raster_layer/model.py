@@ -70,13 +70,13 @@ class RasterLayer(Base, Resource, SpatialLayerMixin):
             paletted = band.GetRasterColorTable()
             if paletted is None:
                 raise ValidationError(_("Only paletted single-band rasters are supported."))
+        else:
+            for bidx in range(1, ds.RasterCount + 1):
+                band = ds.GetRasterBand(bidx)
 
-        for bidx in range(1, ds.RasterCount + 1):
-            band = ds.GetRasterBand(bidx)
-
-            if band.DataType not in SUPPORTED_GDT:
-                raise ValidationError(_("Band #%(band)d has type '%(type)s', however only following band types are supported: %(all_types)s.") % dict(
-                    band=bidx, type=gdal.GetDataTypeName(band.DataType), all_types=SUPPORTED_GDT_NAMES))
+                if band.DataType not in SUPPORTED_GDT:
+                    raise ValidationError(_("Band #%(band)d has type '%(type)s', however only following band types are supported: %(all_types)s.") % dict(
+                        band=bidx, type=gdal.GetDataTypeName(band.DataType), all_types=SUPPORTED_GDT_NAMES))
 
         dsproj = ds.GetProjection()
         dsgtran = ds.GetGeoTransform()
