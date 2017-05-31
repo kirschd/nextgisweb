@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nextgisweb 0.0\n"
 "Report-Msgid-Bugs-To: info@nextgis.ru\n"
-"POT-Creation-Date: 2017-04-06 11:48+0300\n"
+"POT-Creation-Date: 2017-05-11 00:17+0700\n"
 "PO-Revision-Date: 2015-09-14 15:48+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -40,22 +40,22 @@ msgid "Display"
 msgstr "Открыть"
 
 #: amd/ngw-webmap/Display.js:538
-#: amd/ngw-webmap/ui/TinyDisplay/TinyDisplay.js:552
+#: amd/ngw-webmap/ui/TinyDisplay/TinyDisplay.js:549
 msgid "Reset rotation"
 msgstr "Отменить поворот"
 
 #: amd/ngw-webmap/Display.js:541 amd/ngw-webmap/tool/Zoom.js:18
-#: amd/ngw-webmap/ui/TinyDisplay/TinyDisplay.js:555
+#: amd/ngw-webmap/ui/TinyDisplay/TinyDisplay.js:552
 msgid "Zoom in"
 msgstr "Приблизить"
 
 #: amd/ngw-webmap/Display.js:542 amd/ngw-webmap/tool/Zoom.js:21
-#: amd/ngw-webmap/ui/TinyDisplay/TinyDisplay.js:556
+#: amd/ngw-webmap/ui/TinyDisplay/TinyDisplay.js:553
 msgid "Zoom out"
 msgstr "Отодвинуть"
 
 #: amd/ngw-webmap/Display.js:545
-#: amd/ngw-webmap/ui/TinyDisplay/TinyDisplay.js:559
+#: amd/ngw-webmap/ui/TinyDisplay/TinyDisplay.js:556
 msgid "Attributions"
 msgstr "Информация о правообладателях"
 
@@ -112,26 +112,38 @@ msgstr "Протестировать"
 msgid "Go to"
 msgstr "Перейти"
 
-#: amd/ngw-webmap/plugin/FeatureLayer.js:107
+#: amd/ngw-webmap/plugin/FeatureLayer.js:105
 msgid "Feature table"
 msgstr "Таблица объектов"
 
-#: amd/ngw-webmap/plugin/FeatureLayer.js:132
+#: amd/ngw-webmap/plugin/FeatureLayer.js:130
 msgid "Search..."
 msgstr "Поиск..."
 
-#: amd/ngw-webmap/plugin/FeatureLayer.js:255
+#: amd/ngw-webmap/plugin/FeatureLayer.js:251
 msgid "Searching..."
 msgstr "Идет поиск..."
 
-#: amd/ngw-webmap/plugin/FeatureLayer.js:288
-#: amd/ngw-webmap/plugin/FeatureLayer.js:349
+#: amd/ngw-webmap/plugin/FeatureLayer.js:284
+#: amd/ngw-webmap/plugin/FeatureLayer.js:345
 msgid "Refine search criterion"
 msgstr "Уточните критерий поиска"
 
-#: amd/ngw-webmap/plugin/FeatureLayer.js:363
+#: amd/ngw-webmap/plugin/FeatureLayer.js:359
 msgid "Not found"
 msgstr "Не найдено"
+
+#: amd/ngw-webmap/plugin/LayerEditor.js:26
+msgid "Confirmation"
+msgstr "Подтверждение"
+
+#: amd/ngw-webmap/plugin/LayerEditor.js:27
+msgid "Finish editing?"
+msgstr "Закончить редактирование?"
+
+#: amd/ngw-webmap/plugin/LayerEditor.js:41
+msgid "Editing"
+msgstr "Редактирование"
 
 #: amd/ngw-webmap/plugin/LayerInfo.js:36
 msgid "Description"
