@@ -60,7 +60,8 @@ class WebMapComponent(Component):
             popup_width=self.settings.get('popup_width'),
             popup_height=self.settings.get('popup_height'),
             adapters=dict(
-                (i.identity, dict(display_name=i.display_name))
+                (i.identity, dict(display_name=i.display_name,
+                                  interface=i.interface.__name__))
                 for i in WebMapAdapter.registry
             )
         )

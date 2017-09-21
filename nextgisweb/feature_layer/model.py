@@ -3,17 +3,22 @@ from collections import OrderedDict
 
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.orderinglist import ordering_list
+from zope.interface import implements
 
 from .. import db
 from ..models import declarative_base
 from ..resource import (
     Resource,
+    DataScope,
     DataStructureScope,
     Serializer,
     SerializedProperty as SP)
 from ..resource.exception import ValidationError
 
-from .interface import FIELD_TYPE
+from .interface import (
+    FIELD_TYPE,
+    IFeatureLayer,
+    IFeatureLayerStyle)
 from .util import _
 
 Base = declarative_base()
@@ -151,3 +156,20 @@ class FeatureLayerSerializer(Serializer):
     resclass = LayerFieldsMixin
 
     fields = _fields_attr(read=P_DSS_READ, write=P_DSS_WRITE)
+
+
+class FeatureLayerStyle(Base, Resource):
+    identity = 'feature_layer_style'
+    cls_display_name = _("Feature layer style")
+
+    implements(IFeatureLayerStyle)
+
+    __scope__ = DataScope
+
+    @classmethod
+    def check_parent(cls, parent):
+        return IFeatureLayer.providedBy(parent)
+
+    @property
+    def srs(self):
+        return self.parent.srs
