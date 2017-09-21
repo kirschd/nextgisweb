@@ -8,6 +8,8 @@ define([
     "dijit/_TemplatedMixin",
     "dijit/_WidgetsInTemplateMixin",
     "dojo/data/ItemFileWriteStore",
+    "dojo/data/ObjectStore",
+    "dojo/store/Memory",
     "dijit/tree/TreeStoreModel",
     "dijit/Tree",
     "dijit/tree/dndSource",
@@ -43,6 +45,8 @@ define([
     _TemplatedMixin,
     _WidgetsInTemplateMixin,
     ItemFileWriteStore,
+    ObjectStore,
+    Memory,
     TreeStoreModel,
     Tree,
     dndSource,
@@ -88,17 +92,26 @@ define([
                 },
                 betweenThreshold: 5
             });
+
+            var adapters = new Memory({
+                data: array.map(Object.keys(settings.adapters), function (key) {
+                    return {
+                        id: key,
+                        interface: settings.adapters[key].interface,
+                        label: i18n.gettext(settings.adapters[key].display_name),
+                    };
+                })
+            });
+
+            this.adaptersStore = new ObjectStore({
+                objectStore: adapters
+            });
         },
 
         postCreate: function () {
             this.inherited(arguments);
 
-            array.forEach(Object.keys(settings.adapters), function (key) {
-                this.wLayerAdapter.addOption({
-                    value: key,
-                    label: i18n.gettext(settings.adapters[key].display_name)
-                });
-            }, this);
+            this.wLayerAdapter.set("store", this.adaptersStore);
 
             // Создать дерево без model не получается, поэтому создаем его вручную
             this.widgetTree.placeAt(this.containerTree).startup();
@@ -131,7 +144,8 @@ define([
                             "layer_transparency": null,
                             "layer_min_scale_denom": null,
                             "layer_max_scale_denom": null,
-                            "layer_adapter": "image"
+                            "layer_adapter": null,
+                            "interfaces": itm.interfaces
                         }, {
                             parent: widget.getAddParent(),
                             attribute: "children"
@@ -164,7 +178,18 @@ define([
                         widget.wLayerTransparency.set("value", widget.getItemValue("layer_transparency"));
                         widget.wLayerMinScale.set("value", widget.getItemValue("layer_min_scale_denom"));
                         widget.wLayerMaxScale.set("value", widget.getItemValue("layer_max_scale_denom"));
-                        widget.wLayerAdapter.set("value", widget.getItemValue("layer_adapter"));
+
+                        // Значение адаптера текущего элемента
+                        var adapter = widget.getItemValue("layer_adapter");                                     
+ 
+                        // Выводим список адаптеров, поддерживаемых
+                        // текущим элементом
+                        widget.wLayerAdapter.set("query", function (adapter) {
+                            return array.indexOf(newValue.interfaces, adapter.interface) >= 0;
+                        });
+
+                        // Выбираем необходимый адаптер в списке
+                        widget.wLayerAdapter.set("value", adapter);
                     }
 
                     // Изначально боковая панель со свойствами текущего элемента
@@ -282,7 +307,16 @@ define([
                 array.forEach(item.children, function(i) {
                     var element = {};
                     for (var key in i) {
-                        if (key !== "children") { element[key] = i[key]; }
+                        if (key !== "children") {
+                            element[key] = i[key];
+                        }
+                    }
+                    if (!i.children) {
+                        // Вычисляем интерфейс адаптера
+                        element.interfaces = [];
+                        element.interfaces.push(
+                            widget.adaptersStore.objectStore.get(i.layer_adapter).interface
+                        );
                     }
                     var new_item = widget.itemStore.newItem(element, {parent: parent, attribute: "children"});
                     if (i.children) { traverse(i, new_item); }

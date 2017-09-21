@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, print_function, absolute_import
 from ..registry import registry_maker
+from ..feature_layer.interface import IFeatureLayerStyle
+from ..render import IRenderableStyle
 from .util import _
 
 
@@ -22,6 +24,7 @@ class TileAdapter(object):
     identity = 'tile'
     mid = 'ngw-webmap/TileAdapter'
     display_name = _("Tiles")
+    interface = IRenderableStyle
 
 
 @WebMapAdapter.registry.register
@@ -32,3 +35,12 @@ class ImageAdapter(object):
     identity = 'image'
     mid = 'ngw-webmap/ImageAdapter'
     display_name = _("Image")
+    interface = IRenderableStyle
+
+
+@WebMapAdapter.registry.register
+class ImageAdapter(object):
+    identity = 'mvt'
+    mid = 'ngw-webmap/VectorTileAdapter'
+    display_name = _("Vector Tiles")
+    interface = IFeatureLayerStyle
