@@ -115,3 +115,7 @@ class IFeatureQueryIntersects(IFeatureQuery):
 
     def intersects(self, geom):
         """ Установить отбор по пространственному пересечению """
+
+
+class IFeatureLayerStyle(IResourceBase):
+    """ Векторный стиль """

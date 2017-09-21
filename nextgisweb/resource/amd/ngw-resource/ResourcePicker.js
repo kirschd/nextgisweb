@@ -66,7 +66,7 @@ define([
             if (itm === undefined || itm === null) { return false; }
             if (this.interface !== undefined && itm.interfaces.indexOf(this.interface) == -1) { return false; }
             if (this.interfaces !== undefined &&
-                (set.intersection(itm.interfaces, this.interfaces).count == 0)) { return false; }
+                (!set.intersection(itm.interfaces, this.interfaces).count)) { return false; }
             if (this.cls !== undefined && itm.cls != this.cls) { return false; }
 
             return true;
