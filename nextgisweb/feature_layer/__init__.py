@@ -42,6 +42,6 @@ class FeatureLayerComponent(Component):
 
     settings_info = (
         dict(key='identify.attributes', desc=u"Показывать атрибуты в идентификации"),
-        dict(key='search.nominatim', desc=u"Использовать Nominatim при поиске")
+        dict(key='search.nominatim', desc=u"Использовать Nominatim при поиске"),
         dict(key='mvt.attributes', desc=u"Включать атрибуты в векторные тайлы"),
     )
