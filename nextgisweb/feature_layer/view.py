@@ -19,8 +19,9 @@ from ..geometry import geom_from_wkt
 from ..pyramid import viewargs
 from .. import dynmenu as dm
 
-from .interface import IFeatureLayer
+from .interface import IFeatureLayer, IFeatureLayerStyle
 from .extension import FeatureExtension
+from .model import FeatureLayerStyle
 from .util import _
 
 
@@ -36,6 +37,12 @@ class FeatureLayerFieldsWidget(Widget):
     interface = IFeatureLayer
     operation = ('update', )
     amdmod = 'ngw-feature-layer/FieldsWidget'
+
+
+class FeatureLayerStyleWidget(Widget):
+    resource = FeatureLayerStyle
+    operation = ('create', 'update')
+    amdmod = 'ngw-feature-layer/FeatureLayerStyleWidget'
 
 
 PD_READ = DataScope.read

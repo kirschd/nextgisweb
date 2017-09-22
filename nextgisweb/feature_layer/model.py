@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
+from shutil import copyfileobj
 
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.orderinglist import ordering_list
 from zope.interface import implements
 
 from .. import db
+from ..env import env
 from ..models import declarative_base
 from ..resource import (
     Resource,
+    ResourceScope,
     DataScope,
     DataStructureScope,
     Serializer,
     SerializedProperty as SP)
 from ..resource.exception import ValidationError
+from ..file_storage import FileObj
 
 from .interface import (
     FIELD_TYPE,
@@ -166,6 +170,9 @@ class FeatureLayerStyle(Base, Resource):
 
     __scope__ = DataScope
 
+    fileobj_id = db.Column(db.ForeignKey(FileObj.id), nullable=True)
+    fileobj = db.relationship(FileObj, cascade='all')
+
     @classmethod
     def check_parent(cls, parent):
         return IFeatureLayer.providedBy(parent)
@@ -173,3 +180,22 @@ class FeatureLayerStyle(Base, Resource):
     @property
     def srs(self):
         return self.parent.srs
+
+
+class _file_upload_attr(SP):  # NOQA
+
+    def setter(self, srlzr, value):
+        srcfile, _ = env.file_upload.get_filename(value['id'])
+        fileobj = env.file_storage.fileobj(component='feature_layer')
+        srlzr.obj.fileobj = fileobj
+        dstfile = env.file_storage.filename(fileobj, makedirs=True)
+
+        with open(srcfile, 'r') as fs, open(dstfile, 'w') as fd:
+            copyfileobj(fs, fd)
+
+
+class FeatureLayerStyleSerializer(Serializer):
+    identity = FeatureLayerStyle.identity
+    resclass = FeatureLayerStyle
+
+    file_upload = _file_upload_attr(read=None, write=ResourceScope.update)

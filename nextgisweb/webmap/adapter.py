@@ -39,8 +39,16 @@ class ImageAdapter(object):
 
 
 @WebMapAdapter.registry.register
-class ImageAdapter(object):
+class VectorTileAdapter(object):
     identity = 'mvt'
     mid = 'ngw-webmap/VectorTileAdapter'
     display_name = _("Vector Tiles")
+    interface = IFeatureLayerStyle
+
+
+@WebMapAdapter.registry.register
+class VectorAdapter(object):
+    identity = 'vector'
+    mid = 'ngw-webmap/VectorAdapter'
+    display_name = _("Vector")
     interface = IFeatureLayerStyle
