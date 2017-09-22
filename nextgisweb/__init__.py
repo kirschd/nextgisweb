@@ -83,6 +83,7 @@ def amd_packages():
         ('dgrid', 'nextgisweb:amd_packages/contrib/dgrid'),
         ('handlebars', 'nextgisweb:amd_packages/contrib/handlebars'),
         ('openlayers', 'nextgisweb:amd_packages/contrib/openlayers'),
+        ('mapbox-to-ol-style', 'nextgisweb:amd_packages/contrib/mapbox-to-ol-style'),
         ('svg4everybody', 'nextgisweb:amd_packages/contrib/svg4everybody'),
         ('codemirror', 'nextgisweb:amd_packages/contrib/codemirror'),
 

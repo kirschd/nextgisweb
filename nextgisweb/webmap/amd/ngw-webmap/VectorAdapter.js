@@ -4,26 +4,21 @@ define([
     "dojo/request/xhr",
     "./Adapter",
     "ngw/route",
-    "ngw/openlayers/layer/VectorTile",
+    "ngw/openlayers/layer/Vector",
     "openlayers/ol",
     "mapbox-to-ol-style/mb2olstyle"
-], function (declare, xhr, Adapter, route, VectorTile, ol, mb2olstyle) {
+], function (declare, xhr, Adapter, route, Vector, ol, mb2olstyle) {
     return declare(Adapter, {
         createLayer: function (item) {
-            var layer = new VectorTile(item.id, {
+            var layer = new Vector(item.id, {
                 visible: item.visibility,
                 maxResolution: item.maxResolution ? item.maxResolution : undefined,
                 minResolution: item.minResolution ? item.minResolution : undefined,
                 opacity: item.transparency ? (1 - item.transparency / 100) : 1.0
             }, {
-                format: new ol.format.MVT({
-                    layerName: 'mvt-layer',
-                    featureClass: ol.Feature
-                }),
-                tileGrid: ol.tilegrid.createXYZ(),
-                tilePixelRatio: 16,
+                format: new ol.format.GeoJSON(),
                 wrapX: false,
-                url: route.feature_layer.mvt(item.layerId, '{z}', '{x}', '{y}')
+                url: route.feature_layer.geojson(item.layerId)
             });
 
             xhr.get(route.feature_layer.style(item.styleId), {
@@ -31,7 +26,7 @@ define([
             }).then(
                 function (style) {
                     if (Object.keys(style).length !== 0) {
-                        mb2olstyle.default(ol,layer.olLayer, style, 'states');
+                        mb2olstyle.default(ol, layer.olLayer, style, 'states');
                     }
                 }
             );

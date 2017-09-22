@@ -13,15 +13,16 @@ import geojson
 from geojson import GeoJSONEncoder
 from math import pi
 from shapely import wkt
-from pyramid.response import Response
+from pyramid.response import Response, FileResponse
 
-from ..resource import DataScope, resource_factory
+from ..env import env
+from ..resource import DataScope, ResourceScope, resource_factory
 from ..models import DBSession
-from ..vector_layer import VectorLayer
 
 from .interface import IFeatureLayer, IWritableFeatureLayer, FIELD_TYPE
 from .feature import Feature
 from .extension import FeatureExtension
+from .model import FeatureLayerStyle
 
 
 PERM_READ = DataScope.read
@@ -112,10 +113,9 @@ def view_mvt(request):
 
     # TODO: Добавить перепроецирование в 3857
     assert resource.srs_id == 3857
-    assert isinstance(resource, VectorLayer)
 
     mvt_extent = 4096
-    mvt_layer = dict(name=str(resource.id), features=[])
+    mvt_layer = dict(name=str(resource.keyname or resource.id), features=[])
 
     tile_zxy = (int(request.matchdict['z']),
                 int(request.matchdict['x']),
@@ -408,6 +408,16 @@ def count(resource, request):
         content_type=b'application/json')
 
 
+def style(request):
+    request.resource_permission(ResourceScope.read)
+    if request.context.fileobj is not None:
+        fn = env.file_storage.filename(request.context.fileobj)
+        return FileResponse(fn, request=request,
+                            content_type=b'application/json')
+    else:
+        return Response(json.dumps({}), content_type=b'application/json')
+
+
 def setup_pyramid(comp, config):
     config.add_route(
         'feature_layer.geojson', '/api/resource/{id}/geojson',
@@ -445,3 +455,8 @@ def setup_pyramid(comp, config):
         'feature_layer.feature.count', '/api/resource/{id}/feature_count',
         factory=resource_factory) \
         .add_view(count, context=IFeatureLayer, request_method='GET')
+
+    config.add_route(
+        'feature_layer.style', '/api/resource/{id}/file',
+        factory=resource_factory
+    ).add_view(style, context=FeatureLayerStyle, request_method='GET')
