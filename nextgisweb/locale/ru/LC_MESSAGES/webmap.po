@@ -149,37 +149,32 @@ msgstr "Добавить слой"
 msgid "Remove"
 msgstr "Удалить"
 
-#: amd/ngw-webmap/template/ItemWidget.hbs:65
-#: amd/ngw-webmap/template/ItemWidget.hbs:113
+#: amd/ngw-webmap/template/ItemWidget.hbs:64
+#: amd/ngw-webmap/template/ItemWidget.hbs:107
 msgid "Display name"
 msgstr "Наименование"
 
-#: amd/ngw-webmap/template/ItemWidget.hbs:70
-#: amd/ngw-webmap/template/ItemWidget.hbs:117
-msgid "Keyname"
-msgstr "Ключ"
-
-#: amd/ngw-webmap/template/ItemWidget.hbs:74
+#: amd/ngw-webmap/template/ItemWidget.hbs:68
 msgid "Enabled"
 msgstr "Включен"
 
-#: amd/ngw-webmap/template/ItemWidget.hbs:81
+#: amd/ngw-webmap/template/ItemWidget.hbs:75
 msgid "Transparency"
 msgstr "Прозрачность"
 
-#: amd/ngw-webmap/template/ItemWidget.hbs:86
+#: amd/ngw-webmap/template/ItemWidget.hbs:80
 msgid "Min scale"
 msgstr "Мин. масштаб"
 
-#: amd/ngw-webmap/template/ItemWidget.hbs:91
+#: amd/ngw-webmap/template/ItemWidget.hbs:85
 msgid "Max scale"
 msgstr "Макс. масштаб"
 
-#: amd/ngw-webmap/template/ItemWidget.hbs:97
+#: amd/ngw-webmap/template/ItemWidget.hbs:91
 msgid "Adapter"
 msgstr "Адаптер"
 
-#: amd/ngw-webmap/template/ItemWidget.hbs:121
+#: amd/ngw-webmap/template/ItemWidget.hbs:111
 msgid "Expanded"
 msgstr "Развернута"
 
