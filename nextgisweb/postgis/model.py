@@ -31,6 +31,7 @@ from ..feature_layer import (
     LayerField,
     LayerFieldsMixin,
     GEOM_TYPE,
+    GEOM_TYPE_DISPLAY,
     FIELD_TYPE,
     IFeatureLayer,
     IWritableFeatureLayer,
@@ -44,10 +45,6 @@ from ..feature_layer import (
 from .util import _
 
 Base = declarative_base()
-
-
-GEOM_TYPE_DISPLAY = (_("Point"), _("Line"), _("Polygon"),
-                     _("Multipoint"), _("Multiline"), _("Multipolygon"))
 
 PC_READ = ConnectionScope.read
 PC_WRITE = ConnectionScope.write

@@ -49,6 +49,7 @@ from ..feature_layer import (
     LayerField,
     LayerFieldsMixin,
     GEOM_TYPE,
+    GEOM_TYPE_DISPLAY,
     FIELD_TYPE,
     IFeatureLayer,
     IWritableFeatureLayer,
@@ -80,8 +81,6 @@ GEOM_TYPE_OGR = (
     ogr.wkbMultiPoint25D,
     ogr.wkbMultiLineString25D,
     ogr.wkbMultiPolygon25D)
-GEOM_TYPE_DISPLAY = (_("Point"), _("Line"), _("Polygon"),
-                     _("Multipoint"), _("Multiline"), _("Multipolygon"))
 
 FIELD_TYPE_DB = (
     db.Integer,

@@ -2,14 +2,20 @@
 from __future__ import unicode_literals
 
 from ..resource import Widget, Resource
-from .model import Connection  # , Layer
+from .model import WFSConnection, WFSLayer
 from .util import _
 
 
 class ClientWidget(Widget):
-    resource = Connection
+    resource = WFSConnection
     operation = ('create', 'update')
     amdmod = 'ngw-wfsclient/ConnectionWidget'
+
+
+class LayerWidget(Widget):
+    resource = WFSLayer
+    operation = ('create', 'update')
+    amdmod = 'ngw-wfsclient/LayerWidget'
 
 
 def setup_pyramid(comp, conf):

@@ -6,6 +6,7 @@ from .feature import Feature, FeatureSet
 from .model import Base, LayerField, LayerFieldsMixin
 from .interface import (
     GEOM_TYPE,
+    GEOM_TYPE_DISPLAY,
     FIELD_TYPE,
     IFeatureLayer,
     IWritableFeatureLayer,

@@ -2,11 +2,11 @@
 from ..component import Component
 from .model import (
     Base,
-    Connection,
-    # Layer,
+    WFSConnection,
+    WFSLayer,
     WFS_VERSIONS)
 
-__all__ = ['Connection', 'Layer']
+__all__ = ['WFSConnection', 'WFSLayer']
 
 
 class WFSClientComponent(Component):

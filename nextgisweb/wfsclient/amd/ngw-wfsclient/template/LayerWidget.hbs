@@ -1,0 +1,44 @@
+<div data-dojo-type="${baseClass}" data-dojo-attach-point="focusNode"
+    data-ngw-serialize-prefix="${serializePrefix}" style="height: 100%;" class="padding-block">
+
+    <div data-dojo-type="dijit/layout/BorderContainer"
+        data-dojo-props="gutters: false"
+        style="width: 100%; height: 100%"> 
+
+        <div data-dojo-type="dojox/layout/TableContainer"
+            data-dojo-props="region: 'top', cols:1, labelWidth: 200"
+            style="width: 100%">
+
+            <div data-dojo-attach-point="wConnection"
+                data-dojo-type="ngw-resource/ResourceBox"
+                data-ngw-serialize="connection"
+                data-dojo-props="cls: 'wfsclient_connection'"
+                title="{{gettext 'WFS connection'}}" style="width: 100%"></div>
+
+            <div data-dojo-attach-point="wSRS"
+                data-ngw-serialize="srs"
+                data-dojo-type="ngw-spatial-ref-sys/SpatialRefSysSelect"
+                title="{{gettext 'Coordinate system'}}" style="width: 100%"></div>
+
+            <div data-dojo-attach-point="wTypeName"
+                data-ngw-serialize="typename"
+                data-dojo-type="dijit/form/ComboBox"
+                data-dojo-props="required: true"
+                title="{{gettext 'WFS Layer'}}" style="width: 100%"></div>
+
+            <select data-dojo-attach-point="wFields"
+                data-dojo-type="dijit/form/Select"
+                data-dojo-props="colspan: 2"
+                data-ngw-serialize="fields"
+                title="{{gettext 'Attribute definitions'}}"
+                style="width: 100%">
+
+                <option value="keep">{{gettext 'Keep'}}</option>
+                <option value="update">{{gettext 'Reload'}}</option>
+
+            </select>
+
+        </div>
+
+    </div>
+</div>

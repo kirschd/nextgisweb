@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from zope.interface import Interface, Attribute
 
+from .util import _
 from ..resource import IResourceBase
 
 
@@ -14,6 +15,10 @@ class GEOM_TYPE(object):
 
     enum = (POINT, LINESTRING, POLYGON, MULTIPOINT,
             MULTILINESTRING, MULTIPOLYGON)
+
+GEOM_TYPE_DISPLAY = (
+    _("Point"), _("Line"), _("Polygon"), _("Multipoint"),
+    _("Multiline"), _("Multipolygon"))
 
 
 class FIELD_TYPE(object):
