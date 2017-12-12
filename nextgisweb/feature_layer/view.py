@@ -206,16 +206,19 @@ def setup_pyramid(comp, config):
 
         srs = int(request.json_body['srs'])
         geom = geom_from_wkt(request.json_body['geom'], srid=srs)
-        layers = map(int, request.json_body['layers'])
+        lids = map(int, (
+            layer['id'] for layer in request.json_body['layers']))
+        queries = map(json.loads, (
+            layer['query'] for layer in request.json_body['layers']))
 
-        layer_list = DBSession.query(Resource).filter(Resource.id.in_(layers))
+        layer_list = DBSession.query(Resource).filter(Resource.id.in_(lids))
 
         result = dict()
 
         # Number of features in all layers
         feature_count = 0
 
-        for layer in layer_list:
+        for idx, layer in enumerate(layer_list):
             if not setting_disable_check and not layer.has_permission(DataScope.read, request.user):
                 result[layer.id] = dict(error="Forbidden")
 
@@ -225,6 +228,7 @@ def setup_pyramid(comp, config):
             else:
                 query = layer.feature_query()
                 query.intersects(geom)
+                query.filter_json(queries[idx])
 
                 # Limit number of identifyable features by 10 per layer,
                 # otherwise the response might be too big.

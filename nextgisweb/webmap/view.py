@@ -75,6 +75,7 @@ def setup_pyramid(comp, config):
                     minScaleDenom=item.layer_min_scale_denom,
                     maxScaleDenom=item.layer_max_scale_denom,
                     drawOrderPosition=item.draw_order_position,
+                    query=item.layer_query,
                 )
 
                 data['adapter'] = WebMapAdapter.registry.get(

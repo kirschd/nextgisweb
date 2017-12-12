@@ -27,6 +27,7 @@ from ..env import env
 from ..geometry import geom_from_wkt, box
 from ..layer import SpatialLayerMixin
 from ..feature_layer import (
+    QueryMixin,
     Feature,
     FeatureSet,
     LayerField,
@@ -493,7 +494,7 @@ class PostgisLayerSerializer(Serializer):
     fields = _fields_action(write=DataStructureScope.write)
 
 
-class FeatureQueryBase(object):
+class FeatureQueryBase(QueryMixin):
     implements(
         IFeatureQuery,
         IFeatureQueryFilter,

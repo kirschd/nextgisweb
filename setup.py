@@ -31,6 +31,7 @@ requires = [
     'requests',
     'babel',
     'minio',
+    'rest_query',
 ]
 
 extras_require = {

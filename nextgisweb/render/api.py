@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, print_function, absolute_import
+
+import json
+
+from itertools import izip_longest
 from StringIO import StringIO
 
 from PIL import Image
@@ -25,12 +29,17 @@ def tile(request):
 
     p_resource = map(int, filter(None, request.GET['resource'].split(',')))
 
+    p_query = []
+    if 'query' in request.GET:
+        query = request.GET['query']
+        p_query = map(json.loads, filter(None, query.split(',')))
+
     aimg = None
-    for resid in p_resource:
+    for resid, query in izip_longest(p_resource, query):
         obj = Resource.filter_by(id=resid).one()
         if not setting_disable_check:
             request.resource_permission(PD_READ, obj)
-        req = obj.render_request(obj.srs)
+        req = obj.render_request(obj.srs, query)
         rimg = req.render_tile((z, x, y), 256)
 
         if aimg is None:
@@ -65,12 +74,17 @@ def image(request):
     p_size = map(int, request.GET['size'].split(','))
     p_resource = map(int, filter(None, request.GET['resource'].split(',')))
 
+    p_query = []
+    if 'query' in request.GET:
+        query = request.GET['query']
+        p_query = map(json.loads, filter(None, query.split(',')))
+
     aimg = None
-    for resid in p_resource:
+    for resid, query in izip_longest(p_resource, p_query):
         obj = Resource.filter_by(id=resid).one()
         if not setting_disable_check:
             request.resource_permission(PD_READ, obj)
-        req = obj.render_request(obj.srs)
+        req = obj.render_request(obj.srs, query)
         rimg = req.render_extent(p_extent, p_size)
 
         if aimg is None:
