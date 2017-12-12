@@ -18,6 +18,7 @@ from ..resource import DataScope, resource_factory
 from .interface import IFeatureLayer, IWritableFeatureLayer, FIELD_TYPE
 from .feature import Feature
 from .extension import FeatureExtension
+from .util import _
 
 
 PERM_READ = DataScope.read
@@ -246,6 +247,10 @@ def cget(resource, request):
 
     query = resource.feature_query()
     query.geom()
+
+    q = request.params.get('q')
+    if q is not None:
+        query.filter_by_query(json.loads(q))
 
     result = map(serialize, query())
 

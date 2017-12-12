@@ -44,6 +44,7 @@ from ..models import declarative_base, DBSession
 from ..layer import SpatialLayerMixin, IBboxLayer
 
 from ..feature_layer import (
+    QueryMixin,
     Feature,
     FeatureSet,
     LayerField,
@@ -793,7 +794,7 @@ class VectorLayerSerializer(Serializer):
     fields = _fields_attr(read=None, write=P_DS_WRITE)
 
 
-class FeatureQueryBase(object):
+class FeatureQueryBase(QueryMixin):
     implements(
         IFeatureQuery,
         IFeatureQueryFilter,

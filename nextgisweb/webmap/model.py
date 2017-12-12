@@ -93,6 +93,7 @@ class WebMapItem(Base):
     layer_max_scale_denom = db.Column(db.Float, nullable=True)
     layer_adapter = db.Column(db.Unicode, nullable=True)
     draw_order_position = db.Column(db.Integer, nullable=True)
+    layer_query = db.Column(db.Unicode, nullable=True)
 
     parent = db.relationship(
         'WebMapItem', remote_side=id, backref=db.backref(
@@ -136,6 +137,7 @@ class WebMapItem(Base):
                 layer_max_scale_denom=self.layer_max_scale_denom,
                 layer_adapter=self.layer_adapter,
                 draw_order_position=self.draw_order_position,
+                layer_query=self.layer_query,
             )
 
     def from_dict(self, data):
@@ -150,7 +152,7 @@ class WebMapItem(Base):
         for a in ('display_name', 'group_expanded', 'layer_enabled',
                   'layer_adapter', 'layer_style_id', 'layer_transparency',
                   'layer_min_scale_denom', 'layer_max_scale_denom',
-                  'draw_order_position'):
+                  'draw_order_position', 'layer_query'):
 
             if a in data:
                 setattr(self, a, data[a])

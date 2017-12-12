@@ -16,7 +16,8 @@ define([
             }, {
                 url: route.render.image(),
                 params: {
-                    resource: item.styleId
+                    resource: item.styleId,
+                    query: item.query
                 },
                 ratio: 1,
                 imageLoadFunction: function(image, src) {
@@ -25,6 +26,7 @@ define([
                     var queryObject = ioQuery.queryToObject(query);
                     image.getImage().src = url
                         + "?resource=" + queryObject["resource"]
+                        + "&query=" + queryObject["query"]
                         + "&extent=" + queryObject["BBOX"]
                         + "&size=" + queryObject["WIDTH"] + "," + queryObject["HEIGHT"]
                         + "#" + Date.now(); // in-memory cache busting

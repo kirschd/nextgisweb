@@ -3,6 +3,7 @@ define([
     "dojo/_base/declare",
     "dojo/dom-class",
     "dojo/dom-style",
+    "dojo/Stateful",
     "dijit/layout/ContentPane",
     // CodeMirror
     "codemirror/lib/codemirror",
@@ -11,12 +12,14 @@ define([
     declare,
     domClass,
     domStyle,
+    Stateful,
     ContentPane,
     CodeMirror
 ) {
-    return declare(ContentPane, {
+    return declare([ContentPane], {
 
         postCreate: function () {
+            var widget = this;
             this.inherited(arguments);
 
             domStyle.set(this.domNode, "padding", "0");
@@ -38,6 +41,11 @@ define([
             if (this.mode) { this.set("mode", this.mode); }
             if (this.lang) { this.set("lang", this.lang); }
             if (this.value) { this.set("value", this.value); }
+
+            // make widget watchable
+            this._cm.doc.on("change", function () {
+                widget._set("value", widget._cm.getValue());
+            });
         },
 
         startup: function () {

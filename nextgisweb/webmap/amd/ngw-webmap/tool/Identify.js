@@ -368,7 +368,10 @@ define([
                         mapResolution < item.minResolution) {
                         return;
                     }
-                    request.layers.push(item.layerId);
+                    request.layers.push({
+                        id: item.layerId,
+                        query: item.query
+                    });
                 }, this);
 
                 var layerLabels = {};
