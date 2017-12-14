@@ -1,0 +1,28 @@
+<div data-dojo-type="${baseClass}" data-dojo-attach-point="focusNode"
+    data-ngw-serialize-prefix="${prefix}" class="padding-block">
+
+    <div data-dojo-type="dojox/layout/TableContainer"
+         data-dojo-props="cols:1, labelWidth: 200"
+         class="dijitTableLayout--fixed">
+
+        <div data-dojo-type="ngw-resource/ResourceBox"
+            data-dojo-props="interface: 'IFeatureLayer'"
+            data-ngw-serialize="source"
+            title="{{gettext 'Source'}}" style="width: 100%"></div>
+
+        <div data-dojo-type="ngw-pyramid/form/CodeMirror"
+            data-dojo-props="lang: 'javascript', mode: 'application/json', lineNumbers: true"
+            data-ngw-serialize="query"
+            style="border: 1px solid #999; height: 200px;"
+            title="{{gettext 'Query'}}">
+        </div>
+
+        <div data-dojo-attach-point="fields"
+            data-dojo-type="dijit/form/TextBox"
+            data-ngw-serialize="fields"
+            type="hidden">
+        </div>
+
+    </div>
+
+</div>
