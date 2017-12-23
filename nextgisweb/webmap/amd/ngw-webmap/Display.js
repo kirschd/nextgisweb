@@ -249,7 +249,7 @@ define([
             this._startupDeferred = new LoggedDeferred("_startupDeferred");
 
             var widget = this;
-            
+
             // Асинхронная загрузка необходимых модулей
             this._midDeferred = {};
             this._mid = {};
@@ -400,10 +400,10 @@ define([
 
             // Панель с описанием
             if (this.config.webmapDescription) {
-                this.navigationMenuItems.splice(2,0, { 
-                    title: i18n.gettext('Description'), 
-                    name: 'info', 
-                    icon: 'info_outline', 
+                this.navigationMenuItems.splice(2,0, {
+                    title: i18n.gettext('Description'),
+                    name: 'info',
+                    icon: 'info_outline',
                     value: 'infoPanel'
                 });
                 // Асинхронный запуск чтобы применялись УРЛ параметры назначения стартового режима
@@ -875,7 +875,7 @@ define([
             var widget = this,
                 plugins = wmplugin ? this._mid.wmplugin
                                    : this._mid.plugin;
-
+            console.log(plugins)
             array.forEach(Object.keys(plugins), function (key) {
                 console.log("Plugin [%s]::constructor...", key);
 
@@ -1098,4 +1098,3 @@ define([
         }
     });
 });
-
