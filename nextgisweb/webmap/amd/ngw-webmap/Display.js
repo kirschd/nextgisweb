@@ -875,7 +875,7 @@ define([
             var widget = this,
                 plugins = wmplugin ? this._mid.wmplugin
                                    : this._mid.plugin;
-            console.log(plugins)
+
             array.forEach(Object.keys(plugins), function (key) {
                 console.log("Plugin [%s]::constructor...", key);
 
