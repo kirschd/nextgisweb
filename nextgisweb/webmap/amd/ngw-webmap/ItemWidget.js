@@ -114,7 +114,7 @@ define([
             this.wLayerAdapter.set("store", this.adaptersStore);
 
             // Создать дерево без model не получается, поэтому создаем его вручную
-            this.widgetTree.placeAt(this.containerTree).startup();
+            this.widgetTree.placeAt(this.layerTree).startup();
 
             var widget = this;
 
