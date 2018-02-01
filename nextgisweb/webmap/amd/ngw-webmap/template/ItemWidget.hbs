@@ -1,10 +1,11 @@
 <div data-dojo-type="${baseClass}" style="width: 100%; height: 100%; padding: 0;">
 
-    <div data-dojo-attach-point="treeLayoutContainer" 
+    <div data-dojo-attach-point="treeLayoutContainer"
         data-dojo-type="dijit/layout/BorderContainer"
         style="width: 100%; height: 100%; padding: 0;">
 
-        <div data-dojo-type="dijit/layout/TabContainer"
+        <div data-dojo-attach-point="tabContainer"
+            data-dojo-type="dijit/layout/TabContainer"
             data-dojo-props="region: 'center'"
             style="padding: 0; margin-left: 5px; margin-bottom: 5px;">
 
@@ -62,19 +63,23 @@
                 <div data-dojo-type="dijit/layout/BorderContainer"
                     style="width: 100%; height: 100%; padding: 0;">
 
-                    <div data-dojo-type="dijit/Toolbar"
+                    <div data-dojo-type="dijit/layout/ContentPane"
                         data-dojo-props="region: 'bottom'"
                         style="border-top: none; border-right: none; border-left: none;">
 
-                        <div data-dojo-type="dijit/form/Button"
-                            data-dojo-attach-point="btnDeleteItem"
-                            data-dojo-props="iconClass: 'dijitEditorIcon dijitEditorIconDelete'">
-                            {{gettext 'Reset'}}
+                        <div data-dojo-type="dojox/layout/TableContainer"
+                            data-dojo-props="labelWidth: 50">
+
+                            <div data-dojo-attach-point="enableLayerOrder"
+                                data-dojo-type="dijit/form/CheckBox"
+                                title="{{gettext 'Enable'}}">
+                            </div>
+
                         </div>
 
                     </div>
 
-                    <div data-dojo-attach-point="layerOrder"
+                    <div data-dojo-attach-point="layerOrderTree"
                         data-dojo-type="dijit/layout/ContentPane"
                         data-dojo-props="region: 'center'">
                     </div>
@@ -108,7 +113,7 @@
                             data-dojo-type="ngw-pyramid/form/DisplayNameTextBox"
                             title="{{gettext 'Display name'}}" style="width: 100%"></div>
 
-                        <div data-dojo-attach-point="wdgtItemLayerEnabled" 
+                        <div data-dojo-attach-point="wdgtItemLayerEnabled"
                             data-dojo-type="dijit/form/CheckBox"
                             title="{{gettext 'Enabled'}}">
                         </div>
@@ -120,7 +125,7 @@
                             title="{{gettext 'Transparency'}}">
                         </div>
 
-                        <div data-dojo-attach-point="wLayerMinScale" 
+                        <div data-dojo-attach-point="wLayerMinScale"
                             data-dojo-type="ngw-pyramid/form/ScaleTextBox"
                             title="{{gettext 'Min scale'}}">
                         </div>

@@ -587,6 +587,7 @@ define([
 
                     copy.visibility = null;
                     copy.checked = item.visibility;
+                    copy.position = item.layerOrderPosition;
 
                 } else if (copy.type === "group" || copy.type === "root") {
                     copy.children = array.map(item.children, function (c) { return prepare_item(c); });
@@ -812,6 +813,9 @@ define([
             store.fetch({
                 query: {type: "layer"},
                 queryOptions: {deep: true},
+                sort: widget.config.webmapLayerOrderEnabled ? [{
+                    attribute: "position"
+                }]: null,
                 onItem: function (item) {
                     widget._layerSetup(item);
                     widget._layer_order.unshift(store.getValue(item, "id"));
@@ -874,7 +878,7 @@ define([
             mapStates.addState('identifying', this.identify);
             mapStates.setDefaultState('identifying', true);
 
-            topic.publish('/webmap/tools/initialized')
+            topic.publish('/webmap/tools/initialized');
         },
 
         _pluginsSetup: function (wmplugin) {

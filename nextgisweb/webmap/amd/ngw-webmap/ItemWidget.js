@@ -105,6 +105,29 @@ define([
                     })
                 })
             });
+
+            this.layerOrderStore = new ItemFileWriteStore({data: {
+                items: [{item_type: "root"}]
+            }});
+
+            this.layerOrderModel = new TreeStoreModel({
+                store: this.layerOrderStore,
+                query: {}
+            });
+
+            this.widgetLayerOrderTree = new Tree({
+                model: this.layerOrderModel,
+                showRoot: false,
+                getLabel: function (item) {
+                    return item.display_name;
+                },
+                persist: false,
+                dndController: dndSource,
+                checkItemAcceptance: function (node, source, position) {
+                    return position !== "over";
+                },
+                betweenThreshold: 5
+            });
         },
 
         postCreate: function () {
@@ -115,6 +138,8 @@ define([
 
             // Создать дерево без model не получается, поэтому создаем его вручную
             this.widgetTree.placeAt(this.layerTree).startup();
+
+            this.widgetLayerOrderTree.placeAt(this.layerOrderTree).startup();
 
             var widget = this;
 
@@ -150,6 +175,16 @@ define([
                             attribute: "children"
                         }
                     );
+                    this.layerOrderStore.newItem({
+                            "item_type": "layer",
+                            "display_name": itm.display_name,
+                            "layer_style_id": itm.id,
+                            "layer_order_position": null
+                        }, {
+                            parent: widget.layerOrderModel.root,
+                            attribute: "children"
+                        }
+                    );
                 }));
             }));
 
@@ -158,6 +193,8 @@ define([
                 widget.itemStore.deleteItem(widget.widgetTree.selectedItem);
                 widget.treeLayoutContainer.removeChild(widget.itemPane);
                 widget.btnDeleteItem.set("disabled", true);
+
+                // TODO: Delete items from widgetLayerOrderTree
             });
 
             this.widgetTree.watch("selectedItem", function (attr, oldValue, newValue) {
@@ -225,6 +262,10 @@ define([
             this.wLayerAdapter.watch("value", function (attr, oldVal, newVal) {
                 widget.setItemValue("layer_adapter", newVal);
             });
+
+            this.tabContainer.watch("selectedChildWidget", function (name, oldVal, newVal) {
+                // TODO: Disable itemPane
+            });
         },
 
         startup: function () {
@@ -251,9 +292,19 @@ define([
             }
         },
 
+        getOrderedStyles: function () {
+            return array.map(
+                this.layerOrderStore.getValues(
+                    this.layerOrderModel.root, "children"), function (itm) {
+                    return this.layerOrderStore.getValue(itm, "layer_style_id");
+            }, this);
+        },
+
         serializeInMixin: function (data) {
             if (data.webmap === undefined) { data.webmap = {}; }
             var store = this.itemStore;
+            var olist = this.getOrderedStyles();
+
 
             // Простого способа сделать дамп данных из itemStore
             // почему-то нет, поэтому обходим рекурсивно.
@@ -268,11 +319,13 @@ define([
                     layer_min_scale_denom: store.getValue(itm, "layer_min_scale_denom"),
                     layer_max_scale_denom: store.getValue(itm, "layer_max_scale_denom"),
                     layer_adapter: store.getValue(itm, "layer_adapter"),
+                    layer_order_position: olist.indexOf(store.getValue(itm, "layer_style_id")),
                     children: array.map(store.getValues(itm, "children"), function (i) { return traverse(i); })
                 };
             }
 
             data.webmap.root_item = traverse(this.itemModel.root);
+            data.webmap.layer_order_enabled = this.enableLayerOrder.get("checked");
         },
 
         deserializeInMixin: function (data) {
@@ -280,6 +333,7 @@ define([
             if (value === undefined) { return; }
 
             var widget = this;
+            var layers = [];
 
             function traverse(item, parent) {
                 array.forEach(item.children, function(i) {
@@ -290,11 +344,28 @@ define([
                             element.layer_style_url = widget.iurl(i[key]);
                         }
                     }
-                    var new_item = widget.itemStore.newItem(element, {parent: parent, attribute: "children"});
+                    var new_item = widget.itemStore.newItem(element, {
+                        parent: parent,
+                        attribute: "children"
+                    });
+
+                    if (i.item_type == "layer") { layers.push(i); }
                     if (i.children) { traverse(i, new_item); }
                 }, widget);
             }
             traverse(value, this.itemModel.root);
+
+            array.forEach(layers.sort(function (a, b) {
+                return a.layer_order_position -
+                       b.layer_order_position;
+            }), function (item) {
+                widget.layerOrderStore.newItem(item, {
+                    parent: widget.layerOrderModel.root,
+                    attribute: "children"
+                });
+            });
+
+            widget.enableLayerOrder.set("checked", data.webmap.layer_order_enabled);
         },
 
         iurl: function (id) {
