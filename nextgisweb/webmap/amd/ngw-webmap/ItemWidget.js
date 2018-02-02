@@ -354,7 +354,6 @@ define([
             this.btnLayerOrder.on("click", lang.hitch(this, function () {
                 this.layerOrder.show();
             }));
-
             this.widgetTree.watch("selectedItem", function (attr, oldValue, newValue) {
                 if (newValue) {
                     // При изменении выделенного элемента перенесем значения в виджеты
