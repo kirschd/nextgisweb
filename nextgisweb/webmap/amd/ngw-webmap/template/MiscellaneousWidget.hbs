@@ -1,0 +1,15 @@
+<div data-dojo-type="${baseClass}" data-dojo-attach-point="focusNode"
+    data-ngw-serialize-prefix="${serializePrefix}"
+    class="padding-block">
+    
+    <div data-dojo-type="dojox/layout/TableContainer" data-dojo-props="cols:1, labelWidth: 150">
+        
+        <select data-dojo-type="dijit/form/Select"
+            data-ngw-serialize="measurement_system"
+            title="{{gettext 'Measurement system'}}" style="width: 100%">
+            <option value="metric" selected="selected">{{gettext 'Metric'}}</option>
+            <option value="imperial">{{gettext 'Imperial'}}</option>
+        </select>
+
+    </div>
+</div>

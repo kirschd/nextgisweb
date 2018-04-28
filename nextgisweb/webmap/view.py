@@ -23,6 +23,12 @@ class ItemWidget(Widget):
     amdmod = 'ngw-webmap/ItemWidget'
 
 
+class MiscellaneousWidget(Widget):
+    resource = WebMap
+    operation = ('create', 'update')
+    amdmod = 'ngw-webmap/MiscellaneousWidget'
+
+
 def setup_pyramid(comp, config):
 
     def display(obj, request):
@@ -121,6 +127,7 @@ def setup_pyramid(comp, config):
             webmapDescription=obj.description,
             webmapTitle=obj.display_name,
             drawOrderEnabled=obj.draw_order_enabled,
+            measurementSystem=obj.measurement_system,
         )
 
         return dict(

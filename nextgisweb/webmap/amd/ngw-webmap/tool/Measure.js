@@ -36,12 +36,12 @@ define([
 		c3.222,3.222,3.222,8.445,0,11.667c-3.222,3.221-8.445,3.222-11.667,0l-14.576-14.576L11.241,261.03\
 		c-10.974,10.974-14.258,27.477-8.318,41.815c5.939,14.338,19.93,23.688,35.451,23.688l249.788-0.001\
 		c10.18,0,19.938-4.044,27.134-11.238c7.194-7.195,11.239-16.955,11.239-27.133L326.533,38.375z M249.789,249.79l-118.778,0.002\
-		l118.779-118.78L249.789,249.79z"/></g></svg>'
+		l118.779-118.78L249.789,249.79z"/></g></svg>';
             }
 
             var wgs84Sphere = new ol.Sphere(6378137);
 
-            var formatLength = function(line) {
+            var formatLength = function(line, units) {
                 var output;
                 var length = 0;
                 var coordinates = line.getCoordinates();
@@ -52,39 +52,55 @@ define([
                     length += wgs84Sphere.haversineDistance(c1, c2);
                 }
 
-                if (length > 100) {
-                    output = {
+                if ((units === "metric") || (units === null)) {
+                    output = (length > 100) ? {
                         measure: Math.round(length / 1000 * 100) / 100,
-                        units: "km"
-                    };
-                } else {
-                    output = {
+                        suffix: "km"
+                    } : {
                         measure: Math.round(length * 100) / 100,
-                        units: "m"
+                        suffix: "m"
+                    };
+                } else if (units === "imperial") {
+                    length = length * (1 / 0.3048); // feets
+                    output = (length > 5280) ? {
+                        measure: Math.round(length / 5280 * 100) / 100,
+                        suffix: "mi"
+                    } : {
+                        measure: Math.round(length * 100) / 100,
+                        suffix: "ft"
                     };
                 }
+
                 output.label = "L = ";
                 return output;
             };
 
-            var formatArea = function(polygon) {
+            var formatArea = function(polygon, units) {
                 var output;
                 var sourceProj = tool.display.map.olMap.getView().getProjection();
                 var geom = polygon.clone().transform(sourceProj, "EPSG:4326");
                 var coordinates = geom.getLinearRing(0).getCoordinates();
                 var area = Math.abs(wgs84Sphere.geodesicArea(coordinates));
 
-                if (area > 10000) {
-                    output = {
+                if ((units === "metric") || (units === null)) {
+                    output = (area > 10000) ? {
                         measure: Math.round(area / 1000000 * 100) / 100,
-                        units: "km<sup>2</sup>"
-                    };
-                } else {
-                    output = {
+                        suffix: "km<sup>2</sup>"
+                    } : {
                         measure: Math.round(area * 100) / 100,
-                        units: "m<sup>2</sup>"
+                        suffix: "m<sup>2</sup>"
+                    };
+                } else if (units === "imperial") {
+                    area = area * Math.pow(1 / 0.3048, 2);
+                    output = (area > (5280 * 5280)) ? {
+                        measure: Math.round(area / (5280 * 5280) * 100) / 100,
+                        suffix: "mi<sup>2</sup>"
+                    } : {
+                        measure: Math.round(area * 100) / 100,
+                        suffix: "ft<sup>2</sup>"
                     };
                 }
+
                 output.label = "S = ";
                 return output;
             };
@@ -118,21 +134,22 @@ define([
 
             var listener;
             var widget = this;
+            var units = this.display.config.measurementSystem;
             this.interaction.on("drawstart", function(evt) {
                 this.vector.getSource().clear();
                 listener = evt.feature.getGeometry().on("change", function(evt) {
                     var geom = evt.target;
                     var output;
                     if (geom instanceof ol.geom.Polygon) {
-                        output = formatArea(geom);
+                        output = formatArea(geom, units);
                     } else if (geom instanceof ol.geom.LineString) {
-                        output = formatLength(geom);
+                        output = formatLength(geom, units);
                     }
 
                     widget.tooltip.set("content",
                         output.label
                         + number.format(output.measure) + " "
-                        + output.units
+                        + output.suffix
                     );
                 });
             }, this);

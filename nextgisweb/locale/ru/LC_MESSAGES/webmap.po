@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nextgisweb 0.0\n"
 "Report-Msgid-Bugs-To: info@nextgis.ru\n"
-"POT-Creation-Date: 2018-02-21 21:58+0300\n"
+"POT-Creation-Date: 2018-04-28 20:18+0700\n"
 "PO-Revision-Date: 2015-09-14 15:48+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -17,7 +17,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.3.4\n"
+"Generated-By: Babel 2.5.1\n"
 
 #: __init__.py:43
 msgid "Main web map"
@@ -31,11 +31,11 @@ msgstr "Тайлы"
 msgid "Image"
 msgstr "Изображение"
 
-#: model.py:24 model.py:31 view.py:156
+#: model.py:24 model.py:31 view.py:162
 msgid "Web map"
 msgstr "Веб-карта"
 
-#: model.py:26 view.py:159
+#: model.py:26 view.py:165
 msgid "Display"
 msgstr "Открыть"
 
@@ -107,6 +107,10 @@ msgstr "Сохранить"
 #: amd/ngw-webmap/ItemWidget.js:313 amd/ngw-webmap/template/ItemWidget.hbs:26
 msgid "Add group"
 msgstr "Добавить группу"
+
+#: amd/ngw-webmap/MiscellaneousWidget.js:25
+msgid "Miscellaneous"
+msgstr "Разное"
 
 #: amd/ngw-webmap/plugin/FeatureLayer.js:61
 msgid "Go to"
@@ -193,6 +197,18 @@ msgstr "Ресурс стиля"
 #: amd/ngw-webmap/template/ItemWidget.hbs:127
 msgid "Expanded"
 msgstr "Развернута"
+
+#: amd/ngw-webmap/template/MiscellaneousWidget.hbs:9
+msgid "Measurement system"
+msgstr "Система измерения"
+
+#: amd/ngw-webmap/template/MiscellaneousWidget.hbs:10
+msgid "Metric"
+msgstr "Метрическая"
+
+#: amd/ngw-webmap/template/MiscellaneousWidget.hbs:11
+msgid "Imperial"
+msgstr "Имперская"
 
 #: amd/ngw-webmap/tool/Identify.js:212
 msgid "Attributes"

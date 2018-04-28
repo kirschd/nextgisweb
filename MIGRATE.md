@@ -2,6 +2,12 @@
 
 `-- psql -d <database_name> -h 192.168.250.1 -U ngw_admin -a -f migration.sql`
 
+#### (2018-04-28)
+
+```sql
+ALTER TABLE public.webmap ADD COLUMN measurement_system character varying;
+```
+
 #### `-- 229fd7b8d0866f712ebd0e171764700352c25303` (2018-02-02)
 
 ```sql
