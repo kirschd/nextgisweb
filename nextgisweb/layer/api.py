@@ -9,6 +9,38 @@ from .interface import IBboxLayer
 
 
 def extent(resource, request):
+    """
+    ---
+    get:
+        summary: Get extent of the layer in geographic coordinates.
+        description: This method doesn't work for PostGIS layers.
+        parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Resource ID
+        produces:
+        - application/json
+        responses:
+          200:
+            description: success
+            schema:
+              type: object
+              properties:
+                extent:
+                  type: object
+                  properties:
+                    minLat:
+                      type: number
+                    maxLon:
+                      type: number
+                    minLon:
+                      type: number
+                    maxLat:
+                      type: number
+    """
     request.resource_permission(DataScope.read)
 
     extent = resource.extent

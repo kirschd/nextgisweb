@@ -6,6 +6,8 @@ import os.path
 from urllib2 import unquote
 from datetime import timedelta
 
+from apispec import APISpec
+from pyramid_apispec.helpers import add_pyramid_paths
 from pyramid.response import Response, FileResponse
 from pyramid.httpexceptions import HTTPBadRequest
 
@@ -13,6 +15,9 @@ from ..env import env
 from ..package import pkginfo
 
 from .util import ClientRoutePredicate
+
+
+spec = APISpec(title="NextGIS Web OpenAPI", version="latest")
 
 
 def _get_cors_olist():
@@ -232,6 +237,18 @@ def route(request):
     return result
 
 
+def api_spec(request):
+    introspector = request.registry.introspector
+    for itm in introspector.get_category('routes'):
+        route = itm['introspectable']['object']
+        api_pattern = route.pattern.startswith('/api/')
+        if api_pattern:
+            if route.name == 'layer.extent':
+                add_pyramid_paths(spec, route.name, request)
+
+    return spec.to_dict()
+
+
 def locdata(request):
     locale = request.matchdict['locale']
     component = request.matchdict['component']
@@ -345,3 +362,6 @@ def setup_pyramid(comp, config):
         .add_view(home_path_get, request_method='GET', renderer='json') \
         .add_view(home_path_put, request_method='PUT', renderer='json')
 
+    config.add_route('pyramid.openapi_spec', '/api/spec') \
+        .add_view(api_spec, renderer='json')
+    config.pyramid_apispec_add_explorer(spec_route_name='pyramid.openapi_spec')

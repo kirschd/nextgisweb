@@ -130,6 +130,7 @@ class PyramidComponent(Component):
 
         config.include(pyramid_tm)
         config.include(pyramid_mako)
+        config.include('pyramid_apispec.views')
 
         # Filter for quick translation. Defines function tr, which we can use
         # instead of request.localizer.translate in templates.

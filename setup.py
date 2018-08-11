@@ -13,6 +13,7 @@ requires = [
     'pyramid_tm',
     'pyramid_debugtoolbar',
     'pyramid_mako',
+    'pyramid_apispec',
     'zope.sqlalchemy',
     'zope.interface',
     'bunch',
