@@ -17,9 +17,6 @@ from ..package import pkginfo
 from .util import ClientRoutePredicate
 
 
-spec = APISpec(title="NextGIS Web OpenAPI", version="latest")
-
-
 def _get_cors_olist():
     try:
         return env.core.settings_get('pyramid', 'cors_allow_origin')
@@ -111,11 +108,56 @@ def cors_tween_factory(handler, registry):
 
 
 def cors_get(request):
+    """
+    ---
+    get:
+      summary: Get a list of CORS origins.
+      description: Administrator permissions are required.
+      tags:
+        - pyramid
+      produces:
+      - application/json
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              allow_origin:
+                type: array
+                items:
+                  type: string
+    """
     request.require_administrator()
     return dict(allow_origin=_get_cors_olist())
 
 
 def cors_put(request):
+    """
+    ---
+    put:
+      summary: Update a list of CORS origins.
+      description: Administrator permissions are required.
+      tags:
+        - pyramid
+      parameters:
+      - in: body
+        name: body
+        schema:
+          type: object
+          properties:
+            allow_origin:
+              type: array
+              items:
+                type: string
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: success
+    """
     request.require_administrator()
 
     body = request.json_body
@@ -149,11 +191,52 @@ def cors_put(request):
 
 
 def system_name_get(request):
+    """
+    ---
+    get:
+      summary: Get the system full name.
+      description: Administrator permissions are required.
+      tags:
+        - pyramid
+      produces:
+      - application/json
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              full_name:
+                type: string
+    """
     request.require_administrator()
     return dict(full_name=env.core.settings_get('core', 'system.full_name'))
 
 
 def system_name_put(request):
+    """
+    ---
+    put:
+      summary: Update the system full name.
+      description: Administrator permissions are required.
+      tags:
+        - pyramid
+      parameters:
+      - in: body
+        name: body
+        schema:
+          type: object
+          properties:
+            full_name:
+              type: string
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        200:
+          description: success
+    """
     request.require_administrator()
 
     body = request.json_body
@@ -207,11 +290,45 @@ def home_path_put(request):
 
 
 def settings(request):
+    """
+    ---
+    get:
+      summary: Get settings of the component.
+      description:
+      tags:
+        - pyramid
+      parameters:
+      - in: query
+        name: component
+        required: true
+      produces:
+      - application/json
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+    """
     comp = request.env._components[request.GET['component']]
     return comp.client_settings(request)
 
 
 def route(request):
+    """
+    ---
+    get:
+      summary: Get a list of routes.
+      description: This method is used internally.
+      tags:
+        - pyramid
+      produces:
+      - application/json
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+    """
     result = dict()
     route_re = re.compile(r'\{(\w+):{0,1}')
     introspector = request.registry.introspector
@@ -238,12 +355,27 @@ def route(request):
 
 
 def api_spec(request):
+    host = request.host
+    basePath = '/{}'.format(host.split('/', 1)[1]) if '/' in host else None
+
+    options = {}
+    if basePath is not None:
+        options['basePath'] = basePath
+
+    # Store metadata that describes a RESTful API using the OpenAPI specification
+    spec = APISpec(title="NextGIS Web OpenAPI", version="latest",
+                   **options)
+
     introspector = request.registry.introspector
     for itm in introspector.get_category('routes'):
         route = itm['introspectable']['object']
         api_pattern = route.pattern.startswith('/api/')
         if api_pattern:
-            if route.name == 'layer.extent':
+            if route.name in (
+                'pyramid.system_name', 'layer.extent',
+                'pyramid.cors', 'pyramid.settings',
+                'pyramid.route'
+            ):
                 add_pyramid_paths(spec, route.name, request)
 
     return spec.to_dict()

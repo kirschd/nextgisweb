@@ -14,12 +14,13 @@ def extent(resource, request):
     get:
         summary: Get extent of the layer in geographic coordinates.
         description: This method doesn't work for PostGIS layers.
+        tags:
+          - layer
         parameters:
         - in: path
           name: id
           required: true
-          schema:
-            type: integer
+          type: integer
           description: Resource ID
         produces:
         - application/json
