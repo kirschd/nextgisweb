@@ -5,10 +5,12 @@ from sqlalchemy import inspect
 from pyramid.response import Response
 
 from .model import PostgisConnection
-from ..resource import resource_factory
+from ..resource import resource_factory, ConnectionScope
 
 
 def inspect_connection(request):
+    request.resource_permission(ConnectionScope.connect)
+
     connection = request.context
     inspector = inspect(connection.get_engine())
     
